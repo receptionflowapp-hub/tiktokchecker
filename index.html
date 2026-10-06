@@ -81,6 +81,14 @@
   .cur{display:inline-block;width:8px;height:15px;background:var(--fg);vertical-align:-2px;animation:b 1s steps(1) infinite}
   @keyframes b{50%{opacity:0}}
   @media(prefers-reduced-motion:reduce){.cur{animation:none}}
+  .hl{border-color:#7c8cff66;background:linear-gradient(180deg,#171c34,#12161e)}
+  .hl .big{font-size:21px;color:#fff;line-height:1.35;overflow-wrap:anywhere}
+  .hl .sm{color:var(--mut);margin-top:2px}
+  .hl .tiles{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-top:14px}
+  .hl .t{background:var(--box);border:1px solid var(--line);border-radius:12px;padding:12px}
+  .hl .t b{display:block;font-size:18px;color:var(--nu)}
+  .hl .t span{font-size:12px;color:var(--mut)}
+  .hl .tag{display:inline-block;margin-top:10px;font-size:12px;padding:3px 10px;border-radius:99px;border:1px solid #7c8cff77;color:var(--acc)}
 </style>
 </head>
 <body>
@@ -113,6 +121,42 @@ function dateBox(name,d){
   return '<div class="d"><h4>'+name+'</h4>'+r('local',t.toLocaleString())+r('utc',t.toUTCString())+r('epoch',d.epochSeconds)+r('iso',d.iso)+'</div>';
 }
 
+
+function ago(sec){
+  const s=Math.max(0,Date.now()/1000-sec),d=Math.floor(s/86400);
+  if(s<3600)return Math.max(1,Math.floor(s/60))+" minutes ago";
+  if(s<86400)return Math.floor(s/3600)+" hours ago";
+  if(d<60)return d+" days ago";
+  if(d<730)return Math.floor(d/30.44)+" months ago";
+  return (d/365.25).toFixed(1)+" years ago";
+}
+function era(sec){
+  const y=new Date(sec*1000);
+  if(y<new Date("2018-08-02"))return "Pre-merge account: older than the Musical.ly to TikTok switch";
+  if(y<new Date("2020-03-01"))return "Early TikTok era";
+  if(y<new Date("2022-01-01"))return "Lockdown-era account";
+  if(y<new Date("2024-01-01"))return "Peak TikTok era";
+  return "Recent account";
+}
+function highlights(d){
+  const c=d.dates.created&&d.dates.created.epochSeconds,s=d.stats;
+  if(!c)return "";
+  const dt=new Date(c*1000);
+  const days=Math.floor((Date.now()-dt)/864e5),months=Math.max(1,days/30.44);
+  const yrs=Math.floor(days/365.25),mos=Math.floor((days-yrs*365.25)/30.44);
+  const when=dt.toLocaleString(undefined,{weekday:"long",day:"numeric",month:"long",year:"numeric",hour:"numeric",minute:"2-digit"});
+  let t="";
+  const tile=(v,l)=>'<div class="t"><b>'+esc(v)+'</b><span>'+l+'</span></div>';
+  const nm=d.dates.nicknameModified,um=d.dates.usernameModified;
+  t+=tile(nm&&nm.epochSeconds?ago(nm.epochSeconds):"never / not exposed","last nickname change");
+  t+=tile(um&&um.epochSeconds?ago(um.epochSeconds):"never changed","last username change");
+  if(s.following>0&&s.friends!=null)t+=tile(Math.round(s.friends/s.following*100)+"%","of who they follow follows back");
+  if(s.followers>0&&s.likes!=null)t+=tile((s.likes/s.followers).toFixed(1),"likes per follower");
+  if(s.videos>0)t+=tile((s.videos/months).toFixed(1),"videos per month (estimate)");
+  if(s.videos>0&&s.likes!=null)t+=tile(fmt(Math.round(s.likes/s.videos)),"likes per video");
+  return box('highlights','<div class="big">Joined '+esc(when)+'</div><div class="sm">your local time &middot; '+days.toLocaleString()+' days ago &middot; account is '+yrs+' yr '+mos+' mo old</div><span class="tag">'+esc(era(c))+'</span><div class="tiles">'+t+'</div>','hl');
+}
+
 function render(d,demo){
   const p=d.profile,s=d.stats,a=p.avatars||{},big=a.large||p.avatar;
   const chip=(t,on)=>'<span class="chip'+(on?' y':'')+'">'+t+'</span>';
@@ -123,6 +167,7 @@ function render(d,demo){
     (p.bio?'<p class="bio">'+esc(p.bio)+'</p>':'')+
     '<div class="chips">'+chip(p.verified?'verified':'not verified',p.verified)+chip(p.privateAccount?'private':'public',!p.privateAccount)+
     (p.region?chip(esc(p.region),1):'')+(p.organization?chip('organization',1):'')+(p.seller?chip('seller',1):'')+'</div></div></div>');
+  h+=highlights(d);
   const st=[["followers",s.followers],["following",s.following],["likes",s.likes],["videos",s.videos],["friends",s.friends]];
   h+='<div class="stats">'+st.map((x)=>'<div class="stat"><b>'+fmt(x[1])+'</b><span>'+x[0]+'</span><i>'+(x[1]||0).toLocaleString()+'</i></div>').join('')+'</div>';
   h+='<div class="grid2">'+box('identity',row('username',p.username)+row('nickname',p.nickname)+row('language',p.language)+row('region',p.region)+
