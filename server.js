@@ -101,7 +101,7 @@ http.createServer(async (req, res) => {
 
   if (url.pathname === "/healthz") return send(200, { ok: true });
   if (url.pathname === "/" || url.pathname === "/index.html") {
-    return send(200, fs.readFileSync(path.join(__dirname, "index.html")), "text/html; charset=utf-8");
+    return send(200, fs.readFileSync(path.join(__dirname, "index.html"), "utf8"), "text/html; charset=utf-8");
   }
   send(404, { error: "Not found" });
 }).listen(PORT, () => console.log("[+] listening on http://localhost:" + PORT));
