@@ -1,0 +1,168 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>profile_lookup.cpp</title>
+<style>
+  :root{--bg:#0a0c11;--box:#12161e;--box2:#171c26;--line:#262d3d;--fg:#e6ebf5;--mut:#8791a8;
+    --cm:#6fae7c;--ty:#5ad1c0;--st:#f2a982;--nu:#b9dd9c;--bl:#6aa9ff;--kw:#d78be0;--er:#ff8b7a;--acc:#7c8cff}
+  *{box-sizing:border-box}
+  html,body{margin:0;background:var(--bg);color:var(--fg);
+    font:15px/1.6 ui-monospace,"JetBrains Mono","SF Mono",Consolas,Menlo,monospace}
+  body{background:radial-gradient(800px 420px at 10% -10%,#1a2040 0,transparent 60%),var(--bg);
+    padding:calc(16px + env(safe-area-inset-top,0px)) 14px calc(28px + env(safe-area-inset-bottom,0px))}
+  .wrap{max-width:900px;margin:0 auto;display:grid;gap:14px}
+  .box{background:var(--box);border:1px solid var(--line);border-radius:14px;padding:16px;min-width:0}
+  .title{color:var(--cm);font-size:13px;margin:0 0 12px;font-weight:400}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  @media(max-width:700px){.grid2{grid-template-columns:1fr}}
+
+  /* header + search */
+  h1{margin:0 0 4px;font-size:22px;letter-spacing:-.01em}
+  h1 .kw{color:var(--kw)} h1 .ty{color:var(--ty)}
+  .sub{color:var(--mut);font-size:13px;margin-bottom:14px}
+  form{display:flex;gap:10px;flex-wrap:wrap}
+  .field{flex:1;min-width:200px;display:flex;align-items:center;background:#0c0f15;border:1px solid var(--line);
+    border-radius:10px;padding:0 12px;transition:border-color .15s,box-shadow .15s}
+  .field:focus-within{border-color:var(--acc);box-shadow:0 0 0 3px #7c8cff33}
+  .field span{color:var(--mut)}
+  input{flex:1;min-width:0;background:none;border:0;outline:0;color:var(--st);font:inherit;font-size:16px;padding:12px 6px}
+  button{background:var(--acc);color:#0a0c11;border:0;border-radius:10px;padding:0 22px;min-height:46px;font:inherit;font-weight:700;cursor:pointer}
+  button:hover{filter:brightness(1.1)} button:disabled{opacity:.5;cursor:wait}
+  button:focus-visible{outline:2px solid #fff;outline-offset:2px}
+
+  /* profile */
+  .prof{display:flex;gap:18px;align-items:center;flex-wrap:wrap}
+  .av{width:96px;height:96px;border-radius:50%;object-fit:cover;border:2px solid var(--line);background:var(--box2)}
+  .who{flex:1;min-width:200px}
+  .who h2{margin:0;font-size:22px}
+  .at{color:var(--mut)}
+  .bio{margin:8px 0 0;white-space:pre-wrap;overflow-wrap:anywhere}
+  .chips{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}
+  .chip{font-size:12px;padding:2px 10px;border-radius:99px;border:1px solid var(--line);color:var(--mut)}
+  .chip.y{color:var(--ty);border-color:#5ad1c066;background:#5ad1c012}
+
+  /* stats */
+  .stats{display:grid;grid-template-columns:repeat(5,1fr);gap:10px}
+  @media(max-width:700px){.stats{grid-template-columns:repeat(2,1fr)}}
+  .stat{background:var(--box);border:1px solid var(--line);border-radius:14px;padding:14px}
+  .stat b{display:block;font-size:24px;line-height:1.2}
+  .stat span{color:var(--mut);font-size:13px}
+  .stat i{display:block;font-style:normal;color:var(--nu);font-size:12px;margin-top:2px}
+
+  /* rows */
+  .row{display:flex;justify-content:space-between;gap:14px;padding:9px 0;border-top:1px solid var(--line)}
+  .row:first-of-type{border-top:0;padding-top:0}
+  .k{color:var(--mut);flex:0 0 auto}
+  .v{text-align:right;overflow-wrap:anywhere;min-width:0}
+  .v.copy{cursor:pointer} .v.copy:hover{text-decoration:underline dotted}
+  .s{color:var(--st)} .n{color:var(--nu)} .no{color:var(--er)} .yes{color:var(--ty)} .dim{color:var(--mut)}
+
+  /* dates */
+  .dates{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+  @media(max-width:700px){.dates{grid-template-columns:1fr}}
+  .d{background:var(--box2);border:1px solid var(--line);border-radius:12px;padding:12px;min-width:0}
+  .d h4{margin:0 0 8px;font-size:14px;color:var(--ty)}
+  .d .row{font-size:13px;padding:6px 0;flex-direction:column;gap:0}
+  .d .v{text-align:left}
+
+  /* avatars */
+  .avs{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+  @media(max-width:700px){.avs{grid-template-columns:1fr 1fr 1fr}}
+  .a{background:var(--box2);border:1px solid var(--line);border-radius:12px;padding:10px;text-align:center}
+  .a img{width:100%;aspect-ratio:1;object-fit:cover;border-radius:8px;background:#0c0f15}
+  .a span{display:block;margin-top:6px;font-size:12px;color:var(--mut)}
+
+  .note{border-color:#f2a98255;background:#f2a98210;color:var(--st);font-size:13px}
+  .err{border-color:#ff8b7a55;background:#ff8b7a10;color:var(--er)}
+  .empty{color:var(--mut);text-align:center;padding:28px 16px}
+  .foot{color:var(--mut);font-size:12px;text-align:center}
+  .cur{display:inline-block;width:8px;height:15px;background:var(--fg);vertical-align:-2px;animation:b 1s steps(1) infinite}
+  @keyframes b{50%{opacity:0}}
+  @media(prefers-reduced-motion:reduce){.cur{animation:none}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="box">
+    <h1><span class="kw">int</span> <span class="ty">main</span>() { lookup(); }</h1>
+    <div class="sub">// public profile reader. no login, no private data.</div>
+    <form id="f">
+      <label class="field"><span>@</span><input id="u" placeholder="username" aria-label="username" autocomplete="off" autocapitalize="off" spellcheck="false" maxlength="24" autofocus></label>
+      <button id="go" type="submit">run lookup</button>
+    </form>
+  </div>
+  <div id="out" class="wrap" style="max-width:none"><div class="box empty">// enter a username above and hit run lookup</div></div>
+  <div class="foot">// shows only what TikTok publicly returns. "not exposed" = no value returned.</div>
+</div>
+
+<script>
+const $=(id)=>document.getElementById(id);
+const esc=(v)=>String(v==null?"":v).replace(/[&<>"]/g,(c)=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const fmt=(n)=>n==null?"0":Intl.NumberFormat("en",{notation:"compact",maximumFractionDigits:1}).format(n);
+const box=(title,body,cls)=>'<div class="box '+(cls||'')+'">'+(title?'<h3 class="title">// '+title+'</h3>':'')+body+'</div>';
+const val=(v)=>v==null||v===""?'<span class="dim">not exposed</span>':'<span class="s">'+esc(v)+'</span>';
+const row=(k,v,copy)=>'<div class="row"><span class="k">'+k+'</span><span class="v'+(copy?' copy" data-c="'+esc(v):'')+'">'+val(v)+'</span></div>';
+const flag=(k,v)=>'<div class="row"><span class="k">'+k+'</span><span class="v '+(v?'yes':'no')+'">'+!!v+'</span></div>';
+
+function dateBox(name,d){
+  if(!d||!d.epochSeconds) return '<div class="d"><h4>'+name+'</h4><div class="row"><span class="v dim">not exposed</span></div></div>';
+  const t=new Date(d.epochSeconds*1000);
+  const r=(k,v)=>'<div class="row"><span class="k">'+k+'</span><span class="v">'+esc(v)+'</span></div>';
+  return '<div class="d"><h4>'+name+'</h4>'+r('local',t.toLocaleString())+r('utc',t.toUTCString())+r('epoch',d.epochSeconds)+r('iso',d.iso)+'</div>';
+}
+
+function render(d,demo){
+  const p=d.profile,s=d.stats,a=p.avatars||{},big=a.large||p.avatar;
+  const chip=(t,on)=>'<span class="chip'+(on?' y':'')+'">'+t+'</span>';
+  let h='';
+  if(demo) h+=box('',"DEMO MODE: no backend connected, showing sample data. Run server.js for real lookups.",'note');
+  h+=box('profile','<div class="prof">'+(big?'<img class="av" src="'+esc(big)+'" alt="profile picture" referrerpolicy="no-referrer">':'')+
+    '<div class="who"><h2>'+esc(p.nickname||p.username)+'</h2><div class="at">@'+esc(p.username)+'</div>'+
+    (p.bio?'<p class="bio">'+esc(p.bio)+'</p>':'')+
+    '<div class="chips">'+chip(p.verified?'verified':'not verified',p.verified)+chip(p.privateAccount?'private':'public',!p.privateAccount)+
+    (p.region?chip(esc(p.region),1):'')+(p.organization?chip('organization',1):'')+(p.seller?chip('seller',1):'')+'</div></div></div>');
+  const st=[["followers",s.followers],["following",s.following],["likes",s.likes],["videos",s.videos],["friends",s.friends]];
+  h+='<div class="stats">'+st.map((x)=>'<div class="stat"><b>'+fmt(x[1])+'</b><span>'+x[0]+'</span><i>'+(x[1]||0).toLocaleString()+'</i></div>').join('')+'</div>';
+  h+='<div class="grid2">'+box('identity',row('username',p.username)+row('nickname',p.nickname)+row('language',p.language)+row('region',p.region)+
+      row('bioLink',p.bioLink)+row('id',p.id,1)+row('secUid',p.secUid,1))+
+    box('flags',flag('verified',p.verified)+flag('privateAccount',p.privateAccount)+flag('organization',p.organization)+
+      flag('commerceUser',p.commerceUser)+flag('seller',p.seller)+flag('openFavorite',p.openFavorite)+flag('live',p.live)+
+      Object.keys(d.profileTab||{}).filter((k)=>typeof d.profileTab[k]==="boolean").map((k)=>flag(k,d.profileTab[k])).join(''))+'</div>';
+  const st2=d.settings||{};
+  h+='<div class="grid2">'+box('activity',row('likesGiven',s.likesGiven==null?null:Number(s.likesGiven).toLocaleString()))+
+    box('settings (raw codes)',row('comments',st2.comments)+row('duet',st2.duet)+row('stitch',st2.stitch)+row('download',st2.download)+row('followingVisibility',st2.followingVisibility)+row('embed',st2.embed))+'</div>';
+  h+=box('dates','<div class="dates">'+dateBox('created',d.dates.created)+dateBox('nicknameModified',d.dates.nicknameModified)+dateBox('usernameModified',d.dates.usernameModified)+'</div>');
+  const imgs=[["large",a.large||p.avatar],["medium",a.medium],["thumb",a.thumb]].filter((x)=>x[1]);
+  if(imgs.length) h+=box('avatars','<div class="avs">'+imgs.map((x)=>'<div class="a"><img src="'+esc(x[1])+'" alt="'+x[0]+' avatar" referrerpolicy="no-referrer"><span>'+x[0]+'</span></div>').join('')+'</div>');
+  $("out").innerHTML=h;
+}
+
+const DEMO={profile:{id:"7000000000000000000",secUid:"MS4wLjABAAAA_demo",username:"demo_user",nickname:"Demo User",bio:"sample data, not a real account",language:"en",region:"US",bioLink:null,verified:false,privateAccount:false,organization:false,commerceUser:false,seller:false,openFavorite:false,live:false,avatar:"",avatars:{}},
+dates:{created:{epochSeconds:1592775099,iso:"2020-06-21T21:31:39.000Z"},nicknameModified:{epochSeconds:1772019789,iso:"2026-02-25T11:43:09.000Z"},usernameModified:{epochSeconds:0,iso:null}},
+stats:{followers:88,following:74,likes:4994,videos:0,friends:75,likesGiven:120},settings:{comments:0,duet:0,stitch:0,download:0,followingVisibility:1,embed:1},profileTab:{}};
+
+const fail=(m)=>{$("out").innerHTML=box('error',"throw std::runtime_error(\""+esc(m)+"\");",'err');};
+
+document.addEventListener("click",(e)=>{
+  const c=e.target.closest("[data-c]");
+  if(c&&navigator.clipboard){navigator.clipboard.writeText(c.dataset.c).catch(()=>{});}
+});
+
+$("f").addEventListener("submit",async(e)=>{
+  e.preventDefault();
+  const n=$("u").value.trim().replace(/^@/,"");
+  if(!/^[A-Za-z0-9._]{1,24}$/.test(n)) return fail("invalid username: letters, numbers, . and _ only");
+  $("go").disabled=true;
+  $("out").innerHTML=box('','// fetching @'+esc(n)+'... <span class="cur"></span>','empty');
+  try{
+    const r=await fetch("/api/profile?username="+encodeURIComponent(n));
+    const j=await r.json();
+    r.ok?render(j):fail(j.error||"request failed");
+  }catch{render(DEMO,true);}
+  finally{$("go").disabled=false;}
+});
+</script>
+</body>
+</html>
