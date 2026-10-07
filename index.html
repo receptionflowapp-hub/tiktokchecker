@@ -89,6 +89,12 @@
   .hl .t b{display:block;font-size:18px;color:var(--nu)}
   .hl .t span{font-size:12px;color:var(--mut)}
   .hl .tag{display:inline-block;margin-top:10px;font-size:12px;padding:3px 10px;border-radius:99px;border:1px solid #7c8cff77;color:var(--acc)}
+  .ab .r{display:flex;gap:14px;align-items:flex-start;padding:12px 0;border-top:1px solid var(--line)}
+  .ab .r:first-of-type{border-top:0;padding-top:0}
+  .ab .ic{font-size:20px;width:28px;text-align:center;flex:0 0 auto}
+  .ab .lb{color:var(--mut);font-size:13px}
+  .ab .vl{font-size:17px;color:#fff;overflow-wrap:anywhere}
+  .ab .nt{color:var(--mut);font-size:12px;margin-top:10px;padding-top:10px;border-top:1px solid var(--line)}
 </style>
 </head>
 <body>
@@ -138,6 +144,23 @@ function era(sec){
   if(y<new Date("2024-01-01"))return "Peak TikTok era";
   return "Recent account";
 }
+
+function about(d){
+  const p=d.profile,c=d.dates.created,u=d.dates.usernameModified;
+  const r=(ic,lb,vl)=>'<div class="r"><div class="ic">'+ic+'</div><div><div class="lb">'+lb+'</div><div class="vl">'+vl+'</div></div></div>';
+  let joined='<span class="dim">not exposed</span>';
+  if(c&&c.epochSeconds)joined=esc(new Date(c.epochSeconds*1000).toLocaleDateString(undefined,{day:"numeric",month:"long",year:"numeric"}));
+  let based='<span class="dim">not exposed</span>',rc=p.region;
+  if(rc&&/^[A-Za-z]{2}$/.test(rc)){
+    let name=rc.toUpperCase();
+    try{name=new Intl.DisplayNames(["en"],{type:"region"}).of(name)||name;}catch{}
+    based=String.fromCodePoint(...[...rc.toUpperCase()].map((x)=>127397+x.charCodeAt(0)))+" "+esc(name);
+  }
+  let un=u&&u.epochSeconds?"Last changed "+esc(new Date(u.epochSeconds*1000).toLocaleDateString(undefined,{day:"numeric",month:"long",year:"numeric"}))+" ("+ago(u.epochSeconds)+")":"No change recorded";
+  return box('about this account','<div class="ab">'+r("📅","Date joined",joined)+r("📍","Account based in",based)+r("✏️","Username changes",un)+
+    '<div class="nt">Region is what TikTok reports for the account. It may not be the country it was created in, and can be missing. TikTok does not show a username change count or sign-up method like X does.</div></div>','ab');
+}
+
 function highlights(d){
   const c=d.dates.created&&d.dates.created.epochSeconds,s=d.stats;
   if(!c)return "";
@@ -167,7 +190,7 @@ function render(d,demo){
     (p.bio?'<p class="bio">'+esc(p.bio)+'</p>':'')+
     '<div class="chips">'+chip(p.verified?'verified':'not verified',p.verified)+chip(p.privateAccount?'private':'public',!p.privateAccount)+
     (p.region?chip(esc(p.region),1):'')+(p.organization?chip('organization',1):'')+(p.seller?chip('seller',1):'')+'</div></div></div>');
-  h+=highlights(d);
+  h+=highlights(d)+about(d);
   const st=[["followers",s.followers],["following",s.following],["likes",s.likes],["videos",s.videos],["friends",s.friends]];
   h+='<div class="stats">'+st.map((x)=>'<div class="stat"><b>'+fmt(x[1])+'</b><span>'+x[0]+'</span><i>'+(x[1]||0).toLocaleString()+'</i></div>').join('')+'</div>';
   h+='<div class="grid2">'+box('identity',row('username',p.username)+row('nickname',p.nickname)+row('language',p.language)+row('region',p.region)+
