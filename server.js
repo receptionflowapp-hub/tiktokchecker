@@ -43,6 +43,7 @@ async function lookup(username) {
   const u = info.user, s = info.stats || {};
   return {
     status: 200,
+    raw: { user: u, stats: s, shareMeta: info.shareMeta },
     data: {
       profile: {
         id: u.id, secUid: u.secUid, username: u.uniqueId, nickname: u.nickname,
@@ -94,6 +95,18 @@ http.createServer(async (req, res) => {
       let r = c && Date.now() - c.t < 300000 ? c.r : null;
       if (!r) { r = await lookup(username); if (r.status === 200) cache.set(key, { t: Date.now(), r }); }
       return send(r.status, r.data || { error: r.error });
+    } catch (e) {
+      return send(502, { error: "Request to TikTok failed." });
+    }
+  }
+
+  if (url.pathname === "/api/raw") {
+    if (limited(req.socket.remoteAddress)) return send(429, { error: "Rate limit: slow down." });
+    const name = (url.searchParams.get("username") || "").replace(/^@/, "");
+    if (!USER_RE.test(name)) return send(400, { error: "Invalid username." });
+    try {
+      const r = await lookup(name);
+      return send(r.status, r.raw || { error: r.error });
     } catch (e) {
       return send(502, { error: "Request to TikTok failed." });
     }
