@@ -5,18 +5,18 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>profile_lookup.cpp</title>
 <style>
-  :root{--bg:#0a0c11;--box:#12161e;--box2:#171c26;--line:#262d3d;--fg:#e6ebf5;--mut:#8791a8;
+  :root{--bg:#0a0c11;--box:#12161e;--box2:#171c26;--line:#262d3d;--fg:#e6ebf5;--mut:#9aa4bb;
     --cm:#6fae7c;--ty:#5ad1c0;--st:#f2a982;--nu:#b9dd9c;--kw:#d78be0;--er:#ff8b7a;--acc:#7c8cff;
     --fieldbg:#0c0f15;--glow:#1a2040;--hl:#171c34;--strong:#fff;--btn:#0a0c11}
   :root{--fm:ui-monospace,"JetBrains Mono","SF Mono",Consolas,Menlo,monospace;--fb:var(--fm);--fh:var(--fm)}
-  [data-theme=noir]{--bg:#0b0a08;--box:#14120e;--box2:#1a1713;--line:#2e2820;--fg:#ece5d8;--mut:#9a8f7c;--cm:#c9a961;--ty:#d9bd7a;--st:#e8d3a2;--nu:#d9bd7a;--kw:#c9a961;--er:#d97a6c;--acc:#c9a961;--fieldbg:#0e0c09;--glow:#2a2111;--hl:#1d1810;--strong:#fff8ea;--btn:#14110b}
+  [data-theme=noir]{--bg:#0b0a08;--box:#14120e;--box2:#1a1713;--line:#2e2820;--fg:#ece5d8;--mut:#aa9f8c;--cm:#c9a961;--ty:#d9bd7a;--st:#e8d3a2;--nu:#d9bd7a;--kw:#c9a961;--er:#d97a6c;--acc:#c9a961;--fieldbg:#0e0c09;--glow:#2a2111;--hl:#1d1810;--strong:#fff8ea;--btn:#14110b}
   [data-theme=ivory]{--bg:#f6f1e7;--box:#fffdf8;--box2:#f3ece0;--line:#e3d9c6;--fg:#2b2519;--mut:#857a66;--cm:#9a7b2e;--ty:#9a7b2e;--st:#7a5b1d;--nu:#6f6a2a;--kw:#9a7b2e;--er:#b5483a;--acc:#a8842f;--fieldbg:#f6f1e7;--glow:#efe3c6;--hl:#f7efdc;--strong:#1c170d;--btn:#fffdf8}
   [data-theme=red]{--bg:#0c0607;--box:#16090b;--box2:#1e0e11;--line:#3a1a1f;--fg:#f6e8e9;--mut:#b88b90;--cm:#ff6b6b;--ty:#ff5a5f;--st:#ffb3a0;--nu:#ffc9c9;--kw:#ff8fa3;--er:#ff9a9a;--acc:#e11d2e;--fieldbg:#090405;--glow:#4a0d14;--hl:#240b0f;--strong:#fff;--btn:#fff}
   :is([data-theme=noir],[data-theme=ivory]){--fb:"Inter",system-ui,-apple-system,"Segoe UI",sans-serif;--fh:"Cormorant Garamond",Georgia,"Times New Roman",serif}
   [data-theme=light]{--bg:#f4f6fb;--box:#fff;--box2:#f0f2f8;--line:#dfe3ee;--fg:#1d2433;--mut:#6b7488;--cm:#2f8a4a;--ty:#0e8f80;--st:#c2562a;--nu:#3d7a1f;--kw:#a23fb0;--er:#d1432f;--acc:#4a5bff;--fieldbg:#f4f6fb;--glow:#e3e8ff;--hl:#eef0ff;--strong:#10131c;--btn:#fff}
   [data-theme=pink]{--bg:#1a0d16;--box:#241220;--box2:#2c1727;--line:#43243b;--fg:#fbe9f3;--mut:#c496b4;--cm:#ff8fc8;--ty:#ff6fb5;--st:#ffb38a;--nu:#ffd1e8;--kw:#d78bff;--er:#ff7a8a;--acc:#ff4fa3;--fieldbg:#170a13;--glow:#4a1636;--hl:#2e1428;--strong:#fff;--btn:#1a0d16}
   [data-theme=purple]{--bg:#0f0b1a;--box:#171127;--box2:#1d1630;--line:#31264d;--fg:#ece6ff;--mut:#9d90c4;--cm:#9ad18b;--ty:#7fd6ff;--st:#ffb38a;--nu:#c8e6a0;--kw:#e08bff;--er:#ff8b8b;--acc:#8b5cf6;--fieldbg:#0c0817;--glow:#2a1a55;--hl:#1c1636;--strong:#fff;--btn:#0f0b1a}
-  [data-theme=green]{--bg:#050a06;--box:#0b130d;--box2:#101a12;--line:#1f3a25;--fg:#d6f5dc;--mut:#6fa07a;--cm:#4ade80;--ty:#4ade80;--st:#bef264;--nu:#86efac;--kw:#a3e635;--er:#fb7185;--acc:#22c55e;--fieldbg:#040805;--glow:#0f3a1a;--hl:#0d1f12;--strong:#eaffee;--btn:#04100a}
+  [data-theme=green]{--bg:#050a06;--box:#0b130d;--box2:#101a12;--line:#1f3a25;--fg:#d6f5dc;--mut:#86b591;--cm:#4ade80;--ty:#4ade80;--st:#bef264;--nu:#86efac;--kw:#a3e635;--er:#fb7185;--acc:#22c55e;--fieldbg:#040805;--glow:#0f3a1a;--hl:#0d1f12;--strong:#eaffee;--btn:#04100a}
   [data-theme=blue]{--bg:#07101a;--box:#0d1826;--box2:#122033;--line:#1f3550;--fg:#e2efff;--mut:#7f9bbd;--cm:#6fd3b0;--ty:#5ac8fa;--st:#ffc38a;--nu:#a8e6a0;--kw:#b69cff;--er:#ff8b7a;--acc:#3b9cff;--fieldbg:#060d16;--glow:#0f3358;--hl:#102440;--strong:#fff;--btn:#06101a}
   *{box-sizing:border-box}
   html,body{margin:0;background:var(--bg);color:var(--fg);font:15px/1.6 var(--fb)}
@@ -115,40 +115,59 @@
   :is([data-theme=noir],[data-theme=ivory]) #out>*{animation:fi .6s ease both}
   @keyframes fi{from{opacity:0;transform:translateY(8px)}}
   @media(prefers-reduced-motion:reduce){[data-theme=noir] .live,:is([data-theme=noir],[data-theme=ivory]) #out>*{animation:none}}
+  .lead{margin:0 0 14px;font-family:var(--fb);font-size:15px;color:var(--mut)}
+  :focus-visible{outline:2px solid var(--acc);outline-offset:2px}
+  [data-calm="1"] *{animation:none!important;transition:none!important}
+  .sbtn{min-height:34px;padding:0 12px;font-size:13px}
+  .tl{list-style:none;margin:0;padding:0 0 0 18px;border-left:2px solid var(--line)}
+  .tl li{position:relative;padding:0 0 14px 14px}.tl li::before{content:"";position:absolute;left:-25px;top:6px;width:10px;height:10px;border-radius:50%;background:var(--line)}
+  .tl li.on::before{background:var(--acc)}.tl b{display:block;color:var(--strong);font-weight:600}.tl span{color:var(--mut);font-size:13px}
+  .rep h2{margin:0 0 4px}.rep h4{margin:16px 0 6px;color:var(--cm);font-family:var(--fm);font-size:13px;font-weight:400}
+  @media print{
+    .top,#drawer,#scrim,.foot,.page:not(#pg-reports),.btnsrep{display:none!important}
+    body{background:#fff!important;padding:0}#pg-reports{display:block!important}
+    #reportArea,#reportArea *{color:#000!important;background:#fff!important;border-color:#ccc!important}
+  }
+  .bigsave{width:100%;min-height:54px;font-size:17px;margin-bottom:10px;border-radius:12px}
+  .bigsave:disabled{opacity:.6;cursor:default}
 </style>
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 </head>
 <body>
 <div id="scrim"></div>
-<nav id="drawer"><h3>// menu</h3>
+<nav id="drawer" aria-label="Main menu" inert><h3>// menu</h3>
   <button class="nav on" data-tab="lookup">🔎 Lookup</button>
   <button class="nav" data-tab="history">🕘 History</button>
   <button class="nav" data-tab="favs">⭐ Favourites</button>
+  <button class="nav" data-tab="reports">📄 Reports</button>
   <button class="nav" data-tab="tools">🧰 Tools</button>
   <button class="nav" data-tab="settings">⚙️ Settings</button>
 </nav>
 <div class="wrap">
-  <div class="top"><button id="menuBtn" type="button" class="ghost" aria-label="open menu">☰ menu</button><b id="pageName">// lookup</b></div>
+  <header class="top"><button id="menuBtn" type="button" class="ghost" aria-label="open menu" aria-expanded="false" aria-controls="drawer">☰ menu</button><b id="pageName">// lookup</b></header>
+  <main id="main">
   <section id="pg-lookup" class="page on">
   <div class="box">
-    <h1><span class="kw">int</span> <span class="ty">main</span>() { lookup(); }</h1>
-    <div class="sub">// public profile reader. no login, no private data.</div>
+    <h1>See what TikTok publicly shows about any profile</h1>
+    <p class="lead">Check account age, public stats, profile flags, timestamps and more. No login needed.</p>
     <form id="f">
       <div class="inputs">
-        <label class="field"><span>@</span><input id="u" placeholder="username" aria-label="username" autocomplete="off" autocapitalize="off" spellcheck="false" maxlength="24" autofocus></label>
-        <label class="field" id="f2"><span>@</span><input id="v" placeholder="second username" aria-label="second username" autocomplete="off" autocapitalize="off" spellcheck="false" maxlength="24"></label>
+        <label class="field" for="u"><span>@</span><input id="u" placeholder="username" aria-label="username" autocomplete="off" autocapitalize="off" spellcheck="false" maxlength="24" autofocus></label>
+        <label class="field" id="f2" for="v"><span>@</span><input id="v" placeholder="second username" aria-label="second username" autocomplete="off" autocapitalize="off" spellcheck="false" maxlength="24"></label>
       </div>
       <div class="btns"><button id="go" type="submit">run lookup</button><button id="cmpBtn" type="button" class="ghost">+ compare</button></div>
     </form>
   </div>
-  <div id="out"><div class="box empty">// enter a username above and hit run lookup</div></div>
+  <div id="out" aria-live="polite"><div class="box empty">// enter a username above and hit run lookup</div></div>
   <div class="foot">// shows only what TikTok publicly returns. "not exposed" = no value returned.</div>
   </section>
   <section id="pg-history" class="page"></section>
   <section id="pg-favs" class="page"></section>
   <section id="pg-tools" class="page"></section>
+  <section id="pg-reports" class="page"></section>
   <section id="pg-settings" class="page"></section>
+  </main>
 </div>
 
 <script>
@@ -157,13 +176,14 @@ const store={get(k,d){try{const v=localStorage.getItem(k);return v==null?d:JSON.
 const THEMES=[["dark","Dark","#0a0c11","#7c8cff"],["light","Light","#f4f6fb","#4a5bff"],["pink","Pink","#1a0d16","#ff4fa3"],["purple","Purple","#0f0b1a","#8b5cf6"],["green","Hacker","#050a06","#22c55e"],["blue","Ocean","#07101a","#3b9cff"],["noir","Noir & Gold","#0b0a08","#c9a961"],["ivory","Ivory & Gold","#f6f1e7","#a8842f"],["red","Red & Black","#0c0607","#e11d2e"]];
 function applyTheme(t){document.documentElement.dataset.theme=t;store.set("theme",t);}
 applyTheme(store.get("theme","dark"));
+document.documentElement.dataset.calm=store.get("calm",false)?"1":"0";
 const esc=(v)=>String(v==null?"":v).replace(/[&<>"]/g,(c)=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 const fmt=(n)=>n==null?"0":Intl.NumberFormat("en",{notation:"compact",maximumFractionDigits:1}).format(n);
 const box=(t,b,c)=>'<div class="box '+(c||"")+'">'+(t?'<h3 class="title">// '+t+'</h3>':"")+b+"</div>";
 const val=(v)=>v==null||v===""?'<span class="dim">not exposed</span>':'<span class="s">'+esc(v)+"</span>";
 const row=(k,v,cp)=>'<div class="row"><span class="k">'+k+'</span><span class="v'+(cp?' copy" data-c="'+esc(v):"")+'">'+val(v)+"</span></div>";
 const flag=(k,v)=>'<div class="row"><span class="k">'+k+'</span><span class="v '+(v?"yes":"no")+'">'+!!v+"</span></div>";
-const dstr=(s)=>new Date(s*1000).toLocaleDateString(undefined,{day:"numeric",month:"long",year:"numeric"});
+const dstr=(s)=>{const d=new Date(s*1000),m=store.get("df","long");return m==="iso"?d.toISOString().slice(0,10):m==="us"?d.toLocaleDateString("en-US"):d.toLocaleDateString(undefined,{day:"numeric",month:"long",year:"numeric"});};
 
 function ago(sec){
   const s=Math.max(0,Date.now()/1000-sec),d=Math.floor(s/86400);
@@ -244,14 +264,43 @@ function dateBox(n,d){
   return '<div class="d"><h4>'+n+"</h4>"+r("local",t.toLocaleString())+r("utc",t.toUTCString())+r("epoch",d.epochSeconds)+r("iso",d.iso)+"</div>";
 }
 
-function renderOne(d){
+function timeline(d){
+  const ev=[["Account created",d.dates.created],["Nickname modified",d.dates.nicknameModified],["Username modified",d.dates.usernameModified]];
+  const ok=(e)=>e[1]&&e[1].epochSeconds,known=ev.filter(ok).sort((a,b)=>a[1].epochSeconds-b[1].epochSeconds),miss=ev.filter((e)=>!ok(e));
+  const item=(l,t,on)=>'<li class="'+(on?"on":"")+'"><b>'+esc(t)+"</b><span>"+l+"</span></li>";
+  return box("timeline",'<ol class="tl">'+known.map((e)=>item(e[0],dstr(e[1].epochSeconds),1)).join("")+miss.map((e)=>item(e[0],"Not exposed",0)).join("")+'</ol><div class="nt">Only the dates TikTok publicly exposes. TikTok does not provide a full username history.</div>');
+}
+function snapOf(d){const s=d.stats,p=d.profile;return{t:Date.now(),followers:s.followers,following:s.following,likes:s.likes,videos:s.videos,friends:s.friends,nickname:p.nickname,verified:!!p.verified,priv:!!p.privateAccount,avatar:((p.avatars&&p.avatars.large)||p.avatar||"").split("?")[0]};}
+function diffSnap(a,b){
+  const out=[],num=(k)=>{const x=(b[k]||0)-(a[k]||0);if(x)out.push((x>0?"+":"")+fmt(x)+" "+k);};
+  ["followers","following","likes","videos","friends"].forEach(num);
+  if(a.nickname!==b.nickname)out.push("nickname: "+(a.nickname||"-")+" → "+(b.nickname||"-"));
+  if(a.verified!==b.verified)out.push(b.verified?"became verified":"no longer verified");
+  if(a.priv!==b.priv)out.push(b.priv?"became private":"became public");
+  if(a.avatar&&b.avatar&&a.avatar!==b.avatar)out.push("profile picture changed");
+  return out;
+}
+const getSnaps=(k)=>{const v=store.get("snaps",{})[k];return Array.isArray(v)?v:(v?[v]:[]);};
+function saveSnap(d){const all=store.get("snaps",{}),k=d.profile.username.toLowerCase(),a=getSnaps(k);a.push(snapOf(d));all[k]=a.slice(-10);store.set("snaps",all);return a.length;}
+function changes(d,demo){
+  const k=d.profile.username.toLowerCase(),a=getSnaps(k),prev=a[a.length-1];
+  const btn=demo?'<button type="button" class="bigsave" disabled>💾 Save snapshot</button><div class="sm">Demo data is never saved. Snapshots work on your live site.</div>'
+    :'<button type="button" id="snapBtn" class="bigsave">💾 Save snapshot</button>';
+  const note='<div class="nt" id="snapNote">Snapshots are saved only on this device and compared between your own checks. It is not a complete history.</div>';
+  if(demo)return box("snapshot",btn+note);
+  if(!prev)return box("snapshot",btn+'<div class="sm" id="snapSt">No snapshot of @'+esc(d.profile.username)+" saved yet. Save one now, then check again later to see what changed.</div>"+note);
+  const df=diffSnap(prev,snapOf(d));
+  return box("snapshot",btn+'<div class="sm" id="snapSt">Compared with your snapshot from '+esc(new Date(prev.t).toLocaleString())+" ("+a.length+" saved)</div>"+
+    (df.length?df.map((x)=>'<div class="row"><span class="v" style="text-align:left">'+esc(x)+"</span></div>").join(""):'<div class="sm" style="margin-top:6px">No changes in the public data since that snapshot.</div>')+note);
+}
+function renderOne(d,extra){
   const p=d.profile,s=d.stats,a=p.avatars||{},big=a.large||p.avatar,st2=d.settings||{};
   const chip=(t,on)=>'<span class="chip'+(on?" y":"")+'">'+t+"</span>";
   let h=box("profile",'<div class="prof">'+(big?'<img class="av" src="'+esc(big)+'" alt="profile picture" referrerpolicy="no-referrer">':"")+
     '<div class="who"><h2>'+esc(p.nickname||p.username)+'</h2><div class="at">@'+esc(p.username)+"</div>"+(p.bio?'<p class="bio">'+esc(p.bio)+"</p>":"")+
     '<div class="chips">'+chip(p.verified?"verified":"not verified",p.verified)+chip(p.privateAccount?"private":"public",!p.privateAccount)+
     (country(p.region)?chip(esc(country(p.region)),1):"")+(p.organization?chip("organization",1):"")+(p.seller?chip("seller",1):"")+"</div></div></div>");
-  h+=highlights(d)+about(d);
+  h+=(extra||"")+highlights(d)+about(d)+timeline(d);
   h+='<div class="stats">'+[["followers",s.followers],["following",s.following],["likes",s.likes],["videos",s.videos],["friends",s.friends]]
     .map((x)=>'<div class="stat"><b>'+fmt(x[1])+"</b><span>"+x[0]+"</span><i>"+(x[1]||0).toLocaleString()+"</i></div>").join("")+"</div>";
   const compact=store.get("compact",false);
@@ -348,7 +397,8 @@ async function run(u,v){
     if(e instanceof NetErr){demo=true;A=DEMO;B=DEMO2;}else{$("go").disabled=false;return fail(e.message);}
   }
   let h=demo?box("","DEMO MODE: no backend connected, showing sample data. Run server.js for real lookups.","note"):"";
-  h+=v?renderCompare(A,B):renderOne(A);
+  h+=v?renderCompare(A,B):renderOne(A,changes(A,demo));
+  if(!v)window.LAST={d:A,t:Date.now(),demo};
   const base=location.origin!=="null"?location.origin+location.pathname:location.pathname;
   lastLink=base+"?u="+encodeURIComponent(u)+(v?"&v="+encodeURIComponent(v):"");
   lastText=v?summary(A)+"\n\n"+summary(B):summary(A);
@@ -356,8 +406,10 @@ async function run(u,v){
   $("out").innerHTML=h;
   $("shareBtn").onclick=(e)=>copy(lastLink,e.target);
   $("sumBtn").onclick=(e)=>copy(lastText,e.target);
-  if($("favBtn")){const lab=()=>$("favBtn").textContent=(store.get("favs",[]).includes(u)?"★ favourited":"☆ favourite");lab();
-    $("favBtn").onclick=()=>{let f=store.get("favs",[]);f=f.includes(u)?f.filter((x)=>x!==u):[u,...f];store.set("favs",f);lab();};}
+  if($("snapBtn"))$("snapBtn").onclick=(e)=>{const n=saveSnap(A);e.target.textContent="✓ snapshot saved";e.target.disabled=true;$("snapSt").textContent="Saved "+new Date().toLocaleString()+" ("+n+" saved). Check this account again later to see what changed.";};
+  if($("favBtn")){const has=()=>getFavs().some((x)=>x.u.toLowerCase()===u.toLowerCase());
+    const lab=()=>{$("favBtn").textContent=has()?"★ favourited":"☆ favourite";$("favBtn").setAttribute("aria-pressed",has());};lab();
+    $("favBtn").onclick=()=>{let f=getFavs();f=has()?f.filter((x)=>x.u.toLowerCase()!==u.toLowerCase()):[{u,label:"",checked:Date.now()},...f];setFavs(f);lab();};}
   try{history.replaceState(null,"","?u="+encodeURIComponent(u)+(v?"&v="+encodeURIComponent(v):""));}catch{}
   tick();$("go").disabled=false;addHistory(u,v);
 }
@@ -377,27 +429,86 @@ $("f").addEventListener("submit",(e)=>{
   run(u,v);
 });
 
-function renderFavs(){
-  const fs=store.get("favs",[]);
-  $("pg-favs").innerHTML=box("favourites",fs.length?fs.map((u)=>'<div class="row hrow" data-fav="'+esc(u)+'"><span class="k">⭐ @'+esc(u)+'</span><span class="v dim">tap to look up</span></div>').join(""):'<div class="empty">no favourites yet. tap ☆ favourite on a result.</div>')+
-    (fs.length?'<div class="box"><button id="clrFav" type="button" class="ghost">clear favourites</button></div>':"");
-  if($("clrFav"))$("clrFav").onclick=()=>{store.set("favs",[]);renderFavs();};
+const dlFile=(name,text,type)=>{const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([text],{type}));a.download=name;document.body.appendChild(a);a.click();a.remove();};
+const q=(s)=>'"'+String(s==null?"":s).replace(/"/g,'""')+'"';
+function getFavs(){return store.get("favs",[]).map((x)=>typeof x==="string"?{u:x,label:"",checked:0}:x);}
+function setFavs(f){store.set("favs",f);}
+function renderFavs(msg){
+  const fs=getFavs();
+  $("pg-favs").innerHTML=box("favourites",fs.length?fs.map((x,i)=>'<div class="row"><span class="k"><a href="#" data-fav="'+esc(x.u)+'" style="color:var(--strong)">'+esc(x.label||"@"+x.u)+"</a>"+(x.label?'<span class="dim"> @'+esc(x.u)+"</span>":"")+
+    '<br><span class="sm">'+(x.checked?"last checked "+esc(new Date(x.checked).toLocaleString()):"not checked yet")+(x.note?" · "+esc(x.note):"")+'</span></span><span class="v"><button type="button" class="ghost sbtn" data-ren="'+i+'">rename</button> <button type="button" class="ghost sbtn" data-rm="'+i+'" aria-label="remove @'+esc(x.u)+'">remove</button></span></div>').join("")+
+    '<div class="nt">'+esc(msg||"Saved only on this device. Clearing browser data will remove it.")+"</div>":'<div class="empty">no favourites yet. open a result and tap favourite.</div>')+
+    (fs.length?'<div class="box"><div class="btns"><button id="refAll" type="button">refresh all</button><button id="expJ" type="button" class="ghost">export JSON</button><button id="expC" type="button" class="ghost">export CSV</button><button id="clrFav" type="button" class="ghost">clear all</button></div></div>':"");
+  if(!fs.length)return;
+  $("clrFav").onclick=()=>{setFavs([]);renderFavs();};
+  $("expJ").onclick=()=>dlFile("favourites.json",JSON.stringify(getFavs(),null,2),"application/json");
+  $("expC").onclick=()=>dlFile("favourites.csv","username,label,last_checked,note\n"+getFavs().map((x)=>[x.u,x.label,x.checked?new Date(x.checked).toISOString():"",x.note].map(q).join(",")).join("\n"),"text/csv");
+  $("refAll").onclick=refreshAll;
 }
+async function refreshAll(){
+  const fs=getFavs();$("refAll").disabled=true;
+  for(const x of fs){
+    try{const d=await getProfile(x.u),a=getSnaps(x.u.toLowerCase()),prev=a[a.length-1],cur=snapOf(d);
+      x.checked=Date.now();const df=prev?diffSnap(prev,cur):[];x.note=prev?(df.length?df.join(", "):"no change since snapshot"):"no snapshot saved";}
+    catch(e){x.note=e instanceof NetErr?"needs the live server":(e.message||"failed");if(e instanceof NetErr)break;}
+  }
+  setFavs(fs);renderFavs();
+}
+function reportData(L){
+  const d=L.d,p=d.profile,s=d.stats,dt=(o)=>o&&o.epochSeconds?new Date(o.epochSeconds*1000).toISOString():null;
+  return [["Profile snapshot",[["Nickname",p.nickname],["Username","@"+p.username],["Bio",p.bio],["Region",country(p.region)],["Language",langName(p.language)]]],
+    ["Account dates",[["Account created",dt(d.dates.created)],["Nickname modified",dt(d.dates.nicknameModified)],["Username modified",dt(d.dates.usernameModified)]]],
+    ["Public stats",[["Followers",s.followers],["Following",s.following],["Likes",s.likes],["Videos",s.videos],["Friends",s.friends],["Likes given",s.likesGiven]]],
+    ["Public flags",[["Verified",p.verified],["Private account",p.privateAccount],["Organization",p.organization],["Commerce user",p.commerceUser],["Seller",p.seller],["Open favourites",p.openFavorite]]],
+    ["Technical fields",[["User ID",p.id],["secUid",p.secUid]]]];
+}
+const missing=(L)=>reportData(L).flatMap((s)=>s[1]).filter((r)=>r[1]==null||r[1]==="").map((r)=>r[0]);
+function renderReport(){
+  const L=window.LAST;
+  if(!L){$("pg-reports").innerHTML=box("report",'<div class="empty">no report yet. run a lookup first.</div>');return;}
+  const u=L.d.profile.username,src="https://www.tiktok.com/@"+u,when=new Date(L.t).toLocaleString(),miss=missing(L);
+  const sec=reportData(L).map((s)=>"<h4>"+s[0]+"</h4>"+s[1].map((r)=>'<div class="row"><span class="k">'+r[0]+'</span><span class="v">'+(r[1]==null||r[1]===""?'<span class="dim">not exposed</span>':esc(r[1]))+"</span></div>").join("")).join("");
+  $("pg-reports").innerHTML='<div class="box rep" id="reportArea"><h2>Public profile report: @'+esc(u)+'</h2><div class="sm">Looked up '+esc(when)+" · Source: "+esc(src)+"</div>"+
+    (L.demo?'<div class="nt" style="color:var(--st)">DEMO DATA, not a real lookup.</div>':"")+sec+"<h4>Not available</h4><div>"+(miss.length?esc(miss.join(", ")):"nothing missing")+'</div><div class="nt">Only public data TikTok returned at the time of lookup.</div></div>'+
+    '<div class="box btnsrep"><div class="btns"><button id="rCopy" type="button">copy report</button><button id="rJson" type="button" class="ghost">download JSON</button><button id="rCsv" type="button" class="ghost">download CSV</button><button id="rPrint" type="button" class="ghost">print</button><button id="rLink" type="button" class="ghost">copy share link</button></div></div>';
+  const text=()=>"PUBLIC PROFILE REPORT: @"+u+"\nLooked up: "+when+"\nSource: "+src+(L.demo?"\nDEMO DATA":"")+"\n\n"+reportData(L).map((s)=>s[0].toUpperCase()+"\n"+s[1].map((r)=>"  "+r[0]+": "+(r[1]==null||r[1]===""?"not exposed":r[1])).join("\n")).join("\n\n")+"\n\nNot available: "+(miss.join(", ")||"nothing missing");
+  $("rCopy").onclick=(e)=>copy(text(),e.target);
+  $("rJson").onclick=()=>dlFile("report-"+u+".json",JSON.stringify({lookedUpAt:new Date(L.t).toISOString(),source:src,demo:!!L.demo,notAvailable:miss,data:L.d},null,2),"application/json");
+  $("rCsv").onclick=()=>dlFile("report-"+u+".csv","section,field,value\n"+reportData(L).flatMap((s)=>s[1].map((r)=>[s[0],r[0],r[1]].map(q).join(","))).join("\n")+"\n"+["meta","looked_up",new Date(L.t).toISOString()].map(q).join(",")+"\n"+["meta","source",src].map(q).join(","),"text/csv");
+  $("rPrint").onclick=()=>window.print();
+  $("rLink").onclick=(e)=>copy(location.origin!=="null"?location.origin+location.pathname+"?u="+encodeURIComponent(u):lastLink,e.target);
+}
+const GLOSS=[["createTime","when the account was created (unix seconds)"],["nickNameModifyTime","last time the display name changed"],["uniqueIdModifyTime","last time the @username changed"],["region","country code TikTok reports. May differ from where the account was made"],["secUid","long internal id used in some TikTok links"],["privateAccount","whether the account is set to private"],["verified","whether the account has a verified badge"],["friends","accounts that follow each other"],["likes (heart)","total likes received across all videos"],["profileTab","which tabs the profile shows"]];
 function renderTools(){
-  $("pg-tools").innerHTML=box("timestamp converter",'<label class="field"><input id="tsIn" placeholder="unix seconds or a date" autocomplete="off" spellcheck="false"></label>'+
-    '<div class="btns" style="margin-top:10px"><button id="tsNow" type="button" class="ghost">use now</button></div><div id="tsOut" class="nt" style="border:0">paste a unix timestamp like 1592775099, or a date like 2020-06-21.</div>');
-  const go=()=>{
+  const fld=(id,ph,ml)=>'<label class="field" for="'+id+'"><input id="'+id+'" placeholder="'+ph+'" autocomplete="off" autocapitalize="off" spellcheck="false"'+(ml?' maxlength="'+ml+'"':"")+"></label>";
+  const out=(id,t)=>'<div id="'+id+'" class="nt" style="border:0">'+t+"</div>";
+  $("pg-tools").innerHTML=box("timestamp converter",fld("tsIn","unix seconds or a date")+'<div class="btns" style="margin-top:10px"><button id="tsNow" type="button" class="ghost">use now</button></div>'+out("tsOut","paste a unix timestamp like 1592775099, or a date like 2020-06-21."))+
+    box("username cleaner and profile link parser",fld("clIn","paste a TikTok link or a messy @name")+out("clOut","paste a link or name."))+
+    box("json viewer",'<textarea id="jsIn" rows="4" aria-label="JSON to format" placeholder="paste JSON here" style="width:100%;background:var(--fieldbg);color:var(--fg);border:1px solid var(--line);border-radius:10px;padding:10px;font:13px/1.5 var(--fm)"></textarea><pre id="jsOut" class="nt" style="border:0;white-space:pre-wrap;overflow-wrap:anywhere;font-family:var(--fm)"></pre>')+
+    box("region code",fld("rgIn","two letter code, e.g. GB",2)+out("rgOut","TikTok reports region as a two letter country code."))+
+    box("field glossary",GLOSS.map((g)=>'<div class="row"><span class="k">'+g[0]+'</span><span class="v dim">'+esc(g[1])+"</span></div>").join(""));
+  const ts=()=>{
     const v=$("tsIn").value.trim();if(!v){$("tsOut").textContent="paste a unix timestamp like 1592775099, or a date like 2020-06-21.";return;}
     const ms=/^\d+$/.test(v)?(v.length>=12?+v:+v*1000):Date.parse(v);
     if(isNaN(ms)||isNaN(new Date(ms).getTime())){$("tsOut").textContent="not a valid timestamp or date.";return;}
     const d=new Date(ms),r=(k,x)=>'<div class="row"><span class="k">'+k+'</span><span class="v">'+esc(x)+"</span></div>";
     $("tsOut").innerHTML=r("local",d.toLocaleString())+r("utc",d.toUTCString())+r("iso",d.toISOString())+r("epoch",Math.floor(ms/1000))+r("relative",ago(ms/1000));
   };
-  $("tsIn").oninput=go;$("tsNow").onclick=()=>{$("tsIn").value=Math.floor(Date.now()/1000);go();};
+  $("tsIn").oninput=ts;$("tsNow").onclick=()=>{$("tsIn").value=Math.floor(Date.now()/1000);ts();};
+  $("clIn").oninput=()=>{
+    const v=$("clIn").value.trim(),m=v.match(/tiktok\.com\/@([A-Za-z0-9._]{1,24})/i),name=(m?m[1]:v.replace(/^@/,"").replace(/[^A-Za-z0-9._]/g,"")).slice(0,24);
+    $("clOut").innerHTML=!v?"paste a link or name.":name?'cleaned: <b>@'+esc(name)+"</b><br>link: https://www.tiktok.com/@"+esc(name)+'<br><button type="button" id="clGo" class="ghost sbtn" style="margin-top:8px">look it up</button>':"nothing usable found.";
+    if($("clGo"))$("clGo").onclick=()=>{showTab("lookup");setCompare(false);$("u").value=name;run(name,"");};
+  };
+  $("jsIn").oninput=()=>{const v=$("jsIn").value.trim();if(!v){$("jsOut").textContent="";return;}try{$("jsOut").textContent=JSON.stringify(JSON.parse(v),null,2);}catch(e){$("jsOut").textContent="invalid JSON: "+e.message;}};
+  $("rgIn").oninput=()=>{const c=country($("rgIn").value.trim());$("rgOut").textContent=c?c+". This is the region code TikTok reports for the account. It is not proof of where the account was created.":"TikTok reports region as a two letter country code.";};
 }
 document.addEventListener("click",(e)=>{
-  const f=e.target.closest("[data-fav]");if(!f)return;
-  showTab("lookup");setCompare(false);$("u").value=f.dataset.fav;run(f.dataset.fav,"");
+  const f=e.target.closest("[data-fav]");
+  if(f){e.preventDefault();showTab("lookup");setCompare(false);$("u").value=f.dataset.fav;run(f.dataset.fav,"");return;}
+  const rm=e.target.closest("[data-rm]"),rn=e.target.closest("[data-ren]");
+  if(rm){const fs=getFavs();fs.splice(+rm.dataset.rm,1);setFavs(fs);renderFavs();}
+  if(rn){const fs=getFavs(),x=fs[+rn.dataset.ren],n=prompt("Rename favourite",x.label||x.u);if(n!==null){x.label=n.trim();setFavs(fs);renderFavs();}}
 });
 function addHistory(u,v){
   let hs=store.get("hist",[]).filter((x)=>!(x.u===u&&(x.v||"")===(v||"")));
@@ -407,30 +518,41 @@ function showTab(n){
   document.querySelectorAll(".page").forEach((p)=>p.classList.toggle("on",p.id==="pg-"+n));
   document.querySelectorAll(".nav").forEach((b)=>b.classList.toggle("on",b.dataset.tab===n));
   $("pageName").textContent="// "+n;
-  if(n==="history")renderHistory();if(n==="settings")renderSettings();if(n==="favs")renderFavs();if(n==="tools")renderTools();
+  if(n==="history")renderHistory();if(n==="settings")renderSettings();if(n==="favs")renderFavs();if(n==="tools")renderTools();if(n==="reports")renderReport();
   toggleMenu(false);window.scrollTo(0,0);
 }
-function toggleMenu(on){$("drawer").classList.toggle("on",on);$("scrim").classList.toggle("on",on);}
+function toggleMenu(on){
+  $("drawer").classList.toggle("on",on);$("scrim").classList.toggle("on",on);
+  $("drawer").inert=!on;$("menuBtn").setAttribute("aria-expanded",on);
+  if(on){const a=document.querySelector(".nav.on")||document.querySelector(".nav");a&&a.focus();}
+}
+document.addEventListener("keydown",(e)=>{if(e.key==="Escape"&&$("drawer").classList.contains("on")){toggleMenu(false);$("menuBtn").focus();}});
 function renderHistory(){
   const hs=store.get("hist",[]);
-  $("pg-history").innerHTML=box("history",hs.length?hs.map((x,i)=>'<div class="row hrow" data-i="'+i+'"><span class="k">@'+esc(x.u)+(x.v?" vs @"+esc(x.v):"")+'</span><span class="v dim">'+ago(x.t/1000)+"</span></div>").join("")+'<div class="nt">Tap a row to look it up again. Saved only on this device.</div>':'<div class="empty">nothing here yet. run a lookup first.</div>')+
-    (hs.length?'<div class="box"><button id="clrHist" type="button" class="ghost">clear history</button></div>':"");
+  $("pg-history").innerHTML=box("history",'<label class="field" for="hq"><input id="hq" placeholder="search history" autocomplete="off" spellcheck="false"></label><div id="hlist" style="margin-top:10px"></div><div class="nt">Saved only on this device. Clearing your browser data will remove it.</div>')+(hs.length?'<div class="box"><button id="clrHist" type="button" class="ghost">clear all</button></div>':"");
+  const draw=()=>{const f=$("hq").value.toLowerCase();
+    $("hlist").innerHTML=hs.map((x,i)=>[x,i]).filter((a)=>(a[0].u+" "+a[0].v).toLowerCase().includes(f)).map((a)=>'<div class="row hrow" data-i="'+a[1]+'"><span class="k">@'+esc(a[0].u)+(a[0].v?" vs @"+esc(a[0].v):"")+'<br><span class="sm">'+esc(new Date(a[0].t).toLocaleString())+'</span></span><span class="v"><button type="button" class="ghost sbtn" data-del="'+a[1]+'" aria-label="delete this item">delete</button></span></div>').join("")||'<div class="empty">'+(hs.length?"no matches":"nothing here yet. run a lookup first.")+"</div>";};
+  draw();$("hq").oninput=draw;
   if($("clrHist"))$("clrHist").onclick=()=>{store.set("hist",[]);renderHistory();};
 }
 function renderSettings(){
   const cur=store.get("theme","dark"),compact=store.get("compact",false);
   $("pg-settings").innerHTML=box("theme",'<div class="themes">'+THEMES.map((t)=>'<button type="button" class="th'+(t[0]===cur?" on":"")+'" data-th="'+t[0]+'"><i style="background:linear-gradient(135deg,'+t[2]+" 50%,"+t[3]+' 50%)"></i>'+t[1]+"</button>").join("")+"</div>")+
-    box("display",'<div class="row"><span class="k">collapse detail boxes</span><button type="button" id="cmpTog" class="ghost" style="min-height:36px">'+(compact?"on":"off")+'</button></div><div class="nt">Hides identity, flags, settings, dates and avatars under one tap-to-open section.</div>')+
+    box("display",'<div class="row"><span class="k">collapse detail boxes</span><button type="button" id="cmpTog" class="ghost" style="min-height:36px">'+(compact?"on":"off")+'</button></div><div class="row"><span class="k">date format</span><button type="button" id="dfBtn" class="ghost sbtn">'+store.get("df","long")+'</button></div><div class="row"><span class="k">reduce motion</span><button type="button" id="calmBtn" class="ghost sbtn">'+(store.get("calm",false)?"on":"off")+'</button></div><div class="nt">Hides identity, flags, settings, dates and avatars under one tap-to-open section.</div>')+
     box("data",'<button type="button" id="clrAll" class="ghost">clear search history</button>');
   document.querySelectorAll("[data-th]").forEach((b)=>b.onclick=()=>{applyTheme(b.dataset.th);renderSettings();});
   $("cmpTog").onclick=()=>{store.set("compact",!store.get("compact",false));renderSettings();};
+  $("dfBtn").onclick=()=>{const o=["long","iso","us"],n=o[(o.indexOf(store.get("df","long"))+1)%3];store.set("df",n);renderSettings();};
+  $("calmBtn").onclick=()=>{const n=!store.get("calm",false);store.set("calm",n);document.documentElement.dataset.calm=n?"1":"0";renderSettings();};
   $("clrAll").onclick=(e)=>{store.set("hist",[]);e.target.textContent="cleared";};
 }
 $("menuBtn").onclick=()=>toggleMenu(true);
 $("scrim").onclick=()=>toggleMenu(false);
 document.querySelectorAll(".nav").forEach((b)=>b.onclick=()=>showTab(b.dataset.tab));
 document.addEventListener("click",(e)=>{
-  const r=e.target.closest(".hrow");if(!r)return;
+  const dl=e.target.closest("[data-del]");
+  if(dl){const hs=store.get("hist",[]);hs.splice(+dl.dataset.del,1);store.set("hist",hs);renderHistory();return;}
+  const r=e.target.closest(".hrow");if(!r||r.dataset.i==null)return;
   const x=store.get("hist",[])[+r.dataset.i];if(!x)return;
   showTab("lookup");$("u").value=x.u;
   if(x.v){setCompare(true);$("v").value=x.v;}else setCompare(false);
