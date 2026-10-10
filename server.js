@@ -5,6 +5,10 @@ const path = require("path");
 
 const PORT = process.env.PORT || 3000;
 const USER_RE = /^[A-Za-z0-9._]{1,24}$/;
+const LOCKED = new Set(["_ik1xx"]); // joke paywall: these usernames are "premium only"
+const lockedMsg = "Sorry, this user is premium only. Pay 1 million pounds to see this user.";
+const isLocked = (name, url) =>
+  LOCKED.has(name.toLowerCase()) && !(process.env.OWNER_KEY && url.searchParams.get("key") === process.env.OWNER_KEY);
 const hits = new Map(); // ip -> [timestamps]
 const cache = new Map(); // username -> {t, r}
 
@@ -89,6 +93,7 @@ http.createServer(async (req, res) => {
     if (limited(req.socket.remoteAddress)) return send(429, { error: "Rate limit: slow down." });
     const username = (url.searchParams.get("username") || "").replace(/^@/, "");
     if (!USER_RE.test(username)) return send(400, { error: "Invalid username. Use letters, numbers, . and _ only." });
+    if (isLocked(username, url)) return send(402, { premium: true, error: lockedMsg });
     try {
       const key = username.toLowerCase();
       const c = cache.get(key);
@@ -104,6 +109,7 @@ http.createServer(async (req, res) => {
     if (limited(req.socket.remoteAddress)) return send(429, { error: "Rate limit: slow down." });
     const name = (url.searchParams.get("username") || "").replace(/^@/, "");
     if (!USER_RE.test(name)) return send(400, { error: "Invalid username." });
+    if (isLocked(name, url)) return send(402, { premium: true, error: lockedMsg });
     try {
       const r = await lookup(name);
       return send(r.status, r.raw || { error: r.error });

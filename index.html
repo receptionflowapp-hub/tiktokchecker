@@ -6,95 +6,77 @@
 <title>profile_lookup.cpp</title>
 <style>
   :root{--bg:#0a0c11;--box:#12161e;--box2:#171c26;--line:#262d3d;--fg:#e6ebf5;--mut:#8791a8;
-    --cm:#6fae7c;--ty:#5ad1c0;--st:#f2a982;--nu:#b9dd9c;--bl:#6aa9ff;--kw:#d78be0;--er:#ff8b7a;--acc:#7c8cff}
+    --cm:#6fae7c;--ty:#5ad1c0;--st:#f2a982;--nu:#b9dd9c;--kw:#d78be0;--er:#ff8b7a;--acc:#7c8cff}
   *{box-sizing:border-box}
-  html,body{margin:0;background:var(--bg);color:var(--fg);
-    font:15px/1.6 ui-monospace,"JetBrains Mono","SF Mono",Consolas,Menlo,monospace}
+  html,body{margin:0;background:var(--bg);color:var(--fg);font:15px/1.6 ui-monospace,"JetBrains Mono","SF Mono",Consolas,Menlo,monospace}
   body{background:radial-gradient(800px 420px at 10% -10%,#1a2040 0,transparent 60%),var(--bg);
     padding:calc(16px + env(safe-area-inset-top,0px)) 14px calc(28px + env(safe-area-inset-bottom,0px))}
   .wrap{max-width:900px;margin:0 auto;display:grid;gap:14px}
+  #out{display:grid;gap:14px}
   .box{background:var(--box);border:1px solid var(--line);border-radius:14px;padding:16px;min-width:0}
   .title{color:var(--cm);font-size:13px;margin:0 0 12px;font-weight:400}
   .grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
   @media(max-width:700px){.grid2{grid-template-columns:1fr}}
-
-  /* header + search */
-  h1{margin:0 0 4px;font-size:22px;letter-spacing:-.01em}
-  h1 .kw{color:var(--kw)} h1 .ty{color:var(--ty)}
+  h1{margin:0 0 4px;font-size:22px}h1 .kw{color:var(--kw)}h1 .ty{color:var(--ty)}
   .sub{color:var(--mut);font-size:13px;margin-bottom:14px}
-  form{display:flex;gap:10px;flex-wrap:wrap}
-  .field{flex:1;min-width:200px;display:flex;align-items:center;background:#0c0f15;border:1px solid var(--line);
-    border-radius:10px;padding:0 12px;transition:border-color .15s,box-shadow .15s}
+  form{display:grid;gap:10px}
+  .inputs{display:flex;gap:10px;flex-wrap:wrap}
+  .field{flex:1;min-width:180px;display:flex;align-items:center;background:#0c0f15;border:1px solid var(--line);border-radius:10px;padding:0 12px}
   .field:focus-within{border-color:var(--acc);box-shadow:0 0 0 3px #7c8cff33}
   .field span{color:var(--mut)}
-  input{flex:1;min-width:0;background:none;border:0;outline:0;color:var(--st);font:inherit;font-size:16px;padding:12px 6px}
-  button{background:var(--acc);color:#0a0c11;border:0;border-radius:10px;padding:0 22px;min-height:46px;font:inherit;font-weight:700;cursor:pointer}
-  button:hover{filter:brightness(1.1)} button:disabled{opacity:.5;cursor:wait}
+  .field input{flex:1;min-width:0;background:none;border:0;outline:0;color:var(--st);font:inherit;font-size:16px;padding:12px 6px}
+  #f2{display:none}#f2.on{display:flex}
+  .btns{display:flex;gap:10px;flex-wrap:wrap}
+  button{background:var(--acc);color:#0a0c11;border:0;border-radius:10px;padding:0 20px;min-height:44px;font:inherit;font-weight:700;cursor:pointer}
+  button.ghost{background:transparent;color:var(--fg);border:1px solid var(--line)}
+  button:hover{filter:brightness(1.12)}button:disabled{opacity:.5;cursor:wait}
   button:focus-visible{outline:2px solid #fff;outline-offset:2px}
-
-  /* profile */
   .prof{display:flex;gap:18px;align-items:center;flex-wrap:wrap}
   .av{width:96px;height:96px;border-radius:50%;object-fit:cover;border:2px solid var(--line);background:var(--box2)}
-  .who{flex:1;min-width:200px}
-  .who h2{margin:0;font-size:22px}
-  .at{color:var(--mut)}
+  .who{flex:1;min-width:200px}.who h2{margin:0;font-size:22px}.at{color:var(--mut)}
   .bio{margin:8px 0 0;white-space:pre-wrap;overflow-wrap:anywhere}
   .chips{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}
   .chip{font-size:12px;padding:2px 10px;border-radius:99px;border:1px solid var(--line);color:var(--mut)}
   .chip.y{color:var(--ty);border-color:#5ad1c066;background:#5ad1c012}
-
-  /* stats */
+  .hl{border-color:#7c8cff66;background:linear-gradient(180deg,#171c34,#12161e)}
+  .big{font-size:21px;color:#fff;line-height:1.35;overflow-wrap:anywhere}
+  .live{font-size:26px;color:var(--ty);margin:8px 0 2px;font-weight:700;overflow-wrap:anywhere}
+  .sm{color:var(--mut);font-size:13px}
+  .line{margin-top:8px}
+  .tag{display:inline-block;margin-top:10px;font-size:12px;padding:3px 10px;border-radius:99px;border:1px solid #7c8cff77;color:var(--acc)}
+  .tiles{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-top:14px}
+  .t{background:var(--box);border:1px solid var(--line);border-radius:12px;padding:12px}
+  .t b{display:block;font-size:18px;color:var(--nu)}.t span{display:block;line-height:1.35;font-size:12px;color:var(--mut)}
   .stats{display:grid;grid-template-columns:repeat(5,1fr);gap:10px}
-  @media(max-width:700px){.stats{grid-template-columns:repeat(2,1fr)}}
+  @media(max-width:700px){.stats{grid-template-columns:repeat(2,1fr)}.stat:last-child{grid-column:1/-1}}
   .stat{background:var(--box);border:1px solid var(--line);border-radius:14px;padding:14px}
-  .stat b{display:block;font-size:24px;line-height:1.2}
-  .stat span{color:var(--mut);font-size:13px}
-  .stat i{display:block;font-style:normal;color:var(--nu);font-size:12px;margin-top:2px}
-
-  /* rows */
+  .stat b{display:block;font-size:24px;line-height:1.2}.stat span{color:var(--mut);font-size:13px}
+  .stat i{display:block;font-style:normal;color:var(--nu);font-size:12px}
   .row{display:flex;justify-content:space-between;gap:14px;padding:9px 0;border-top:1px solid var(--line)}
   .row:first-of-type{border-top:0;padding-top:0}
-  .k{color:var(--mut);flex:0 0 auto}
-  .v{text-align:right;overflow-wrap:anywhere;min-width:0}
-  .v.copy{cursor:pointer} .v.copy:hover{text-decoration:underline dotted}
-  .s{color:var(--st)} .n{color:var(--nu)} .no{color:var(--er)} .yes{color:var(--ty)} .dim{color:var(--mut)}
-
-  /* dates */
-  .dates{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+  .k{color:var(--mut);flex:0 0 auto}.v{text-align:right;overflow-wrap:anywhere;min-width:0}
+  .v.copy{cursor:pointer}.s{color:var(--st)}.no{color:var(--er)}.yes{color:var(--ty)}.dim{color:var(--mut)}
+  .dates,.avs{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
   @media(max-width:700px){.dates{grid-template-columns:1fr}}
-  .d{background:var(--box2);border:1px solid var(--line);border-radius:12px;padding:12px;min-width:0}
+  .d,.a{background:var(--box2);border:1px solid var(--line);border-radius:12px;padding:12px;min-width:0}
   .d h4{margin:0 0 8px;font-size:14px;color:var(--ty)}
-  .d .row{font-size:13px;padding:6px 0;flex-direction:column;gap:0}
-  .d .v{text-align:left}
-
-  /* avatars */
-  .avs{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
-  @media(max-width:700px){.avs{grid-template-columns:1fr 1fr 1fr}}
-  .a{background:var(--box2);border:1px solid var(--line);border-radius:12px;padding:10px;text-align:center}
-  .a img{width:100%;aspect-ratio:1;object-fit:cover;border-radius:8px;background:#0c0f15}
+  .d .row{font-size:13px;padding:6px 0;flex-direction:column;gap:0}.d .v{text-align:left}
+  .a{text-align:center;padding:10px}.a img{width:100%;aspect-ratio:1;object-fit:cover;border-radius:8px;background:#0c0f15}
   .a span{display:block;margin-top:6px;font-size:12px;color:var(--mut)}
-
+  .ab .r{display:flex;gap:14px;padding:12px 0;border-top:1px solid var(--line)}
+  .ab .r:first-of-type{border-top:0;padding-top:0}
+  .ab .ic{font-size:20px;width:28px;text-align:center}.ab .lb{color:var(--mut);font-size:13px}.ab .vl{font-size:17px;color:#fff;overflow-wrap:anywhere}
+  .nt{color:var(--mut);font-size:12px;margin-top:10px;padding-top:10px;border-top:1px solid var(--line)}
+  .cmp{display:grid;grid-template-columns:1fr 1fr 1fr;font-size:14px}
+  .cmp>div{padding:10px 8px;border-top:1px solid var(--line);overflow-wrap:anywhere;min-width:0}
+  .cmp .h{border-top:0;text-align:center}.cmp .h img{width:64px;height:64px;border-radius:50%;object-fit:cover;border:2px solid var(--line)}
+  .cmp .l{color:var(--mut)}.cmp .c{text-align:center}.cmp .w{color:var(--nu);font-weight:700}
   .note{border-color:#f2a98255;background:#f2a98210;color:var(--st);font-size:13px}
   .err{border-color:#ff8b7a55;background:#ff8b7a10;color:var(--er)}
   .empty{color:var(--mut);text-align:center;padding:28px 16px}
   .foot{color:var(--mut);font-size:12px;text-align:center}
   .cur{display:inline-block;width:8px;height:15px;background:var(--fg);vertical-align:-2px;animation:b 1s steps(1) infinite}
-  @keyframes b{50%{opacity:0}}
-  @media(prefers-reduced-motion:reduce){.cur{animation:none}}
-  .hl{border-color:#7c8cff66;background:linear-gradient(180deg,#171c34,#12161e)}
-  .hl .big{font-size:21px;color:#fff;line-height:1.35;overflow-wrap:anywhere}
-  .hl .sm{color:var(--mut);margin-top:2px}
-  .hl .tiles{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-top:14px}
-  .hl .t{background:var(--box);border:1px solid var(--line);border-radius:12px;padding:12px}
-  .hl .t b{display:block;font-size:18px;color:var(--nu)}
-  .hl .t span{font-size:12px;color:var(--mut)}
-  .hl .tag{display:inline-block;margin-top:10px;font-size:12px;padding:3px 10px;border-radius:99px;border:1px solid #7c8cff77;color:var(--acc)}
-  .ab .r{display:flex;gap:14px;align-items:flex-start;padding:12px 0;border-top:1px solid var(--line)}
-  .ab .r:first-of-type{border-top:0;padding-top:0}
-  .ab .ic{font-size:20px;width:28px;text-align:center;flex:0 0 auto}
-  .ab .lb{color:var(--mut);font-size:13px}
-  .ab .vl{font-size:17px;color:#fff;overflow-wrap:anywhere}
-  .ab .nt{color:var(--mut);font-size:12px;margin-top:10px;padding-top:10px;border-top:1px solid var(--line)}
+  @keyframes b{50%{opacity:0}}@media(prefers-reduced-motion:reduce){.cur{animation:none}}
 </style>
 </head>
 <body>
@@ -103,11 +85,14 @@
     <h1><span class="kw">int</span> <span class="ty">main</span>() { lookup(); }</h1>
     <div class="sub">// public profile reader. no login, no private data.</div>
     <form id="f">
-      <label class="field"><span>@</span><input id="u" placeholder="username" aria-label="username" autocomplete="off" autocapitalize="off" spellcheck="false" maxlength="24" autofocus></label>
-      <button id="go" type="submit">run lookup</button>
+      <div class="inputs">
+        <label class="field"><span>@</span><input id="u" placeholder="username" aria-label="username" autocomplete="off" autocapitalize="off" spellcheck="false" maxlength="24" autofocus></label>
+        <label class="field" id="f2"><span>@</span><input id="v" placeholder="second username" aria-label="second username" autocomplete="off" autocapitalize="off" spellcheck="false" maxlength="24"></label>
+      </div>
+      <div class="btns"><button id="go" type="submit">run lookup</button><button id="cmpBtn" type="button" class="ghost">+ compare</button></div>
     </form>
   </div>
-  <div id="out" class="wrap" style="max-width:none"><div class="box empty">// enter a username above and hit run lookup</div></div>
+  <div id="out"><div class="box empty">// enter a username above and hit run lookup</div></div>
   <div class="foot">// shows only what TikTok publicly returns. "not exposed" = no value returned.</div>
 </div>
 
@@ -115,18 +100,11 @@
 const $=(id)=>document.getElementById(id);
 const esc=(v)=>String(v==null?"":v).replace(/[&<>"]/g,(c)=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 const fmt=(n)=>n==null?"0":Intl.NumberFormat("en",{notation:"compact",maximumFractionDigits:1}).format(n);
-const box=(title,body,cls)=>'<div class="box '+(cls||'')+'">'+(title?'<h3 class="title">// '+title+'</h3>':'')+body+'</div>';
-const val=(v)=>v==null||v===""?'<span class="dim">not exposed</span>':'<span class="s">'+esc(v)+'</span>';
-const row=(k,v,copy)=>'<div class="row"><span class="k">'+k+'</span><span class="v'+(copy?' copy" data-c="'+esc(v):'')+'">'+val(v)+'</span></div>';
-const flag=(k,v)=>'<div class="row"><span class="k">'+k+'</span><span class="v '+(v?'yes':'no')+'">'+!!v+'</span></div>';
-
-function dateBox(name,d){
-  if(!d||!d.epochSeconds) return '<div class="d"><h4>'+name+'</h4><div class="row"><span class="v dim">not exposed</span></div></div>';
-  const t=new Date(d.epochSeconds*1000);
-  const r=(k,v)=>'<div class="row"><span class="k">'+k+'</span><span class="v">'+esc(v)+'</span></div>';
-  return '<div class="d"><h4>'+name+'</h4>'+r('local',t.toLocaleString())+r('utc',t.toUTCString())+r('epoch',d.epochSeconds)+r('iso',d.iso)+'</div>';
-}
-
+const box=(t,b,c)=>'<div class="box '+(c||"")+'">'+(t?'<h3 class="title">// '+t+'</h3>':"")+b+"</div>";
+const val=(v)=>v==null||v===""?'<span class="dim">not exposed</span>':'<span class="s">'+esc(v)+"</span>";
+const row=(k,v,cp)=>'<div class="row"><span class="k">'+k+'</span><span class="v'+(cp?' copy" data-c="'+esc(v):"")+'">'+val(v)+"</span></div>";
+const flag=(k,v)=>'<div class="row"><span class="k">'+k+'</span><span class="v '+(v?"yes":"no")+'">'+!!v+"</span></div>";
+const dstr=(s)=>new Date(s*1000).toLocaleDateString(undefined,{day:"numeric",month:"long",year:"numeric"});
 
 function ago(sec){
   const s=Math.max(0,Date.now()/1000-sec),d=Math.floor(s/86400);
@@ -138,99 +116,207 @@ function ago(sec){
 }
 function era(sec){
   const y=new Date(sec*1000);
-  if(y<new Date("2018-08-02"))return "Pre-merge account: older than the Musical.ly to TikTok switch";
+  if(y<new Date("2018-08-02"))return "Older than the Musical.ly to TikTok switch";
   if(y<new Date("2020-03-01"))return "Early TikTok era";
   if(y<new Date("2022-01-01"))return "Lockdown-era account";
   if(y<new Date("2024-01-01"))return "Peak TikTok era";
   return "Recent account";
 }
-
-function about(d){
-  const p=d.profile,c=d.dates.created,u=d.dates.usernameModified;
-  const r=(ic,lb,vl)=>'<div class="r"><div class="ic">'+ic+'</div><div><div class="lb">'+lb+'</div><div class="vl">'+vl+'</div></div></div>';
-  let joined='<span class="dim">not exposed</span>';
-  if(c&&c.epochSeconds)joined=esc(new Date(c.epochSeconds*1000).toLocaleDateString(undefined,{day:"numeric",month:"long",year:"numeric"}));
-  let based='<span class="dim">not exposed</span>',rc=p.region;
-  if(rc&&/^[A-Za-z]{2}$/.test(rc)){
-    let name=rc.toUpperCase();
-    try{name=new Intl.DisplayNames(["en"],{type:"region"}).of(name)||name;}catch{}
-    based=String.fromCodePoint(...[...rc.toUpperCase()].map((x)=>127397+x.charCodeAt(0)))+" "+esc(name);
-  }
-  let un=u&&u.epochSeconds?"Last changed "+esc(new Date(u.epochSeconds*1000).toLocaleDateString(undefined,{day:"numeric",month:"long",year:"numeric"}))+" ("+ago(u.epochSeconds)+")":"No change recorded";
-  return box('about this account','<div class="ab">'+r("📅","Date joined",joined)+r("📍","Account based in",based)+r("✏️","Username changes",un)+
-    '<div class="nt">Region is what TikTok reports for the account. It may not be the country it was created in, and can be missing. TikTok does not show a username change count or sign-up method like X does.</div></div>','ab');
+function birthday(sec){
+  const c=new Date(sec*1000),n=new Date(),today=new Date(n.getFullYear(),n.getMonth(),n.getDate());
+  let next=new Date(n.getFullYear(),c.getMonth(),c.getDate());
+  if(next<today)next=new Date(n.getFullYear()+1,c.getMonth(),c.getDate());
+  const days=Math.round((next-today)/864e5),turns=next.getFullYear()-c.getFullYear();
+  if(days===0)return "🎂 Account birthday is TODAY. It turns "+turns+"!";
+  return "🎂 Turns "+turns+" in "+days+" day"+(days===1?"":"s")+" ("+next.toLocaleDateString(undefined,{day:"numeric",month:"long"})+")";
 }
+function funLine(sec){
+  const days=(Date.now()/1000-sec)/86400,km=Math.round(days*2.575e6/1e5)/10;
+  return "🌍 Since joining, Earth has travelled about "+km+" million km around the Sun. In Unix time they joined at second "+sec.toLocaleString()+".";
+}
+function country(rc){
+  if(!rc||!/^[A-Za-z]{2}$/.test(rc))return null;
+  const up=rc.toUpperCase();let name=up;
+  try{name=new Intl.DisplayNames(["en"],{type:"region"}).of(up)||up;}catch{}
+  return String.fromCodePoint(...[...up].map((x)=>127397+x.charCodeAt(0)))+" "+name;
+}
+function langName(c){try{return c?new Intl.DisplayNames(["en"],{type:"language"}).of(c):null;}catch{return c;}}
+
+function tick(){
+  document.querySelectorAll("[data-live]").forEach((el)=>{
+    let s=Math.max(0,Math.floor(Date.now()/1000-el.dataset.live));
+    const d=Math.floor(s/86400);s%=86400;const h=Math.floor(s/3600);s%=3600;
+    el.textContent=d.toLocaleString()+"d "+h+"h "+Math.floor(s/60)+"m "+(s%60)+"s";
+  });
+}
+setInterval(tick,1000);
 
 function highlights(d){
   const c=d.dates.created&&d.dates.created.epochSeconds,s=d.stats;
   if(!c)return "";
-  const dt=new Date(c*1000);
-  const days=Math.floor((Date.now()-dt)/864e5),months=Math.max(1,days/30.44);
+  const dt=new Date(c*1000),days=Math.floor((Date.now()-dt)/864e5),months=Math.max(1,days/30.44);
   const yrs=Math.floor(days/365.25),mos=Math.floor((days-yrs*365.25)/30.44);
   const when=dt.toLocaleString(undefined,{weekday:"long",day:"numeric",month:"long",year:"numeric",hour:"numeric",minute:"2-digit"});
-  let t="";
-  const tile=(v,l)=>'<div class="t"><b>'+esc(v)+'</b><span>'+l+'</span></div>';
+  const tile=(v,l)=>'<div class="t"><b>'+esc(v)+"</b><span>"+l+"</span></div>";
   const nm=d.dates.nicknameModified,um=d.dates.usernameModified;
-  t+=tile(nm&&nm.epochSeconds?ago(nm.epochSeconds):"never / not exposed","last nickname change");
-  t+=tile(um&&um.epochSeconds?ago(um.epochSeconds):"never changed","last username change");
+  let t=tile(nm&&nm.epochSeconds?ago(nm.epochSeconds):"not exposed","last nickname change")+tile(um&&um.epochSeconds?ago(um.epochSeconds):"never changed","last username change");
   if(s.following>0&&s.friends!=null)t+=tile(Math.round(s.friends/s.following*100)+"%","of who they follow follows back");
   if(s.followers>0&&s.likes!=null)t+=tile((s.likes/s.followers).toFixed(1),"likes per follower");
   if(s.videos>0)t+=tile((s.videos/months).toFixed(1),"videos per month (estimate)");
   if(s.videos>0&&s.likes!=null)t+=tile(fmt(Math.round(s.likes/s.videos)),"likes per video");
-  return box('highlights','<div class="big">Joined '+esc(when)+'</div><div class="sm">your local time &middot; '+days.toLocaleString()+' days ago &middot; account is '+yrs+' yr '+mos+' mo old</div><span class="tag">'+esc(era(c))+'</span><div class="tiles">'+t+'</div>','hl');
+  return box("highlights",'<div class="big">Joined '+esc(when)+'</div><div class="sm">your local time &middot; account is '+yrs+" yr "+mos+' mo old</div>'+
+    '<div class="live" data-live="'+c+'"></div><div class="sm">live account age</div>'+
+    '<div class="line">'+birthday(c)+'</div><div class="line sm">'+funLine(c)+'</div><span class="tag">'+esc(era(c))+"</span>"+'<div class="tiles">'+t+"</div>","hl");
 }
 
-function render(d,demo){
-  const p=d.profile,s=d.stats,a=p.avatars||{},big=a.large||p.avatar;
-  const chip=(t,on)=>'<span class="chip'+(on?' y':'')+'">'+t+'</span>';
-  let h='';
-  if(demo) h+=box('',"DEMO MODE: no backend connected, showing sample data. Run server.js for real lookups.",'note');
-  h+=box('profile','<div class="prof">'+(big?'<img class="av" src="'+esc(big)+'" alt="profile picture" referrerpolicy="no-referrer">':'')+
-    '<div class="who"><h2>'+esc(p.nickname||p.username)+'</h2><div class="at">@'+esc(p.username)+'</div>'+
-    (p.bio?'<p class="bio">'+esc(p.bio)+'</p>':'')+
-    '<div class="chips">'+chip(p.verified?'verified':'not verified',p.verified)+chip(p.privateAccount?'private':'public',!p.privateAccount)+
-    (p.region?chip(esc(p.region),1):'')+(p.organization?chip('organization',1):'')+(p.seller?chip('seller',1):'')+'</div></div></div>');
+function about(d){
+  const p=d.profile,c=d.dates.created,u=d.dates.usernameModified;
+  const r=(ic,lb,vl)=>'<div class="r"><div class="ic">'+ic+'</div><div><div class="lb">'+lb+'</div><div class="vl">'+vl+"</div></div></div>";
+  const nx='<span class="dim">not exposed</span>';
+  return box("about this account",'<div class="ab">'+r("📅","Date joined",c&&c.epochSeconds?esc(dstr(c.epochSeconds)):nx)+
+    r("📍","Account based in",country(p.region)?esc(country(p.region)):nx)+
+    r("✏️","Username changes",u&&u.epochSeconds?"Last changed "+esc(dstr(u.epochSeconds))+" ("+ago(u.epochSeconds)+")":"No change recorded")+
+    '<div class="nt">Region is what TikTok reports for the account. It may not be where it was created, and can be missing. TikTok has no username change count or sign-up method like X.</div></div>',"ab");
+}
+
+function dateBox(n,d){
+  if(!d||!d.epochSeconds)return '<div class="d"><h4>'+n+'</h4><div class="row"><span class="v dim">not exposed</span></div></div>';
+  const t=new Date(d.epochSeconds*1000),r=(k,v)=>'<div class="row"><span class="k">'+k+'</span><span class="v">'+esc(v)+"</span></div>";
+  return '<div class="d"><h4>'+n+"</h4>"+r("local",t.toLocaleString())+r("utc",t.toUTCString())+r("epoch",d.epochSeconds)+r("iso",d.iso)+"</div>";
+}
+
+function renderOne(d){
+  const p=d.profile,s=d.stats,a=p.avatars||{},big=a.large||p.avatar,st2=d.settings||{};
+  const chip=(t,on)=>'<span class="chip'+(on?" y":"")+'">'+t+"</span>";
+  let h=box("profile",'<div class="prof">'+(big?'<img class="av" src="'+esc(big)+'" alt="profile picture" referrerpolicy="no-referrer">':"")+
+    '<div class="who"><h2>'+esc(p.nickname||p.username)+'</h2><div class="at">@'+esc(p.username)+"</div>"+(p.bio?'<p class="bio">'+esc(p.bio)+"</p>":"")+
+    '<div class="chips">'+chip(p.verified?"verified":"not verified",p.verified)+chip(p.privateAccount?"private":"public",!p.privateAccount)+
+    (country(p.region)?chip(esc(country(p.region)),1):"")+(p.organization?chip("organization",1):"")+(p.seller?chip("seller",1):"")+"</div></div></div>");
   h+=highlights(d)+about(d);
-  const st=[["followers",s.followers],["following",s.following],["likes",s.likes],["videos",s.videos],["friends",s.friends]];
-  h+='<div class="stats">'+st.map((x)=>'<div class="stat"><b>'+fmt(x[1])+'</b><span>'+x[0]+'</span><i>'+(x[1]||0).toLocaleString()+'</i></div>').join('')+'</div>';
-  h+='<div class="grid2">'+box('identity',row('username',p.username)+row('nickname',p.nickname)+row('language',p.language)+row('region',p.region)+
-      row('bioLink',p.bioLink)+row('id',p.id,1)+row('secUid',p.secUid,1))+
-    box('flags',flag('verified',p.verified)+flag('privateAccount',p.privateAccount)+flag('organization',p.organization)+
-      flag('commerceUser',p.commerceUser)+flag('seller',p.seller)+flag('openFavorite',p.openFavorite)+flag('live',p.live)+
-      Object.keys(d.profileTab||{}).filter((k)=>typeof d.profileTab[k]==="boolean").map((k)=>flag(k,d.profileTab[k])).join(''))+'</div>';
-  const st2=d.settings||{};
-  h+='<div class="grid2">'+box('activity',row('likesGiven',s.likesGiven==null?null:Number(s.likesGiven).toLocaleString()))+
-    box('settings (raw codes)',row('comments',st2.comments)+row('duet',st2.duet)+row('stitch',st2.stitch)+row('download',st2.download)+row('followingVisibility',st2.followingVisibility)+row('embed',st2.embed))+'</div>';
-  h+=box('dates','<div class="dates">'+dateBox('created',d.dates.created)+dateBox('nicknameModified',d.dates.nicknameModified)+dateBox('usernameModified',d.dates.usernameModified)+'</div>');
+  h+='<div class="stats">'+[["followers",s.followers],["following",s.following],["likes",s.likes],["videos",s.videos],["friends",s.friends]]
+    .map((x)=>'<div class="stat"><b>'+fmt(x[1])+"</b><span>"+x[0]+"</span><i>"+(x[1]||0).toLocaleString()+"</i></div>").join("")+"</div>";
+  h+='<div class="grid2">'+box("identity",row("username",p.username)+row("nickname",p.nickname)+row("language",langName(p.language))+row("region",p.region)+row("bioLink",p.bioLink)+row("id",p.id,1)+row("secUid",p.secUid,1))+
+    box("flags",flag("verified",p.verified)+flag("privateAccount",p.privateAccount)+flag("organization",p.organization)+flag("commerceUser",p.commerceUser)+flag("seller",p.seller)+flag("openFavorite",p.openFavorite)+flag("live",p.live)+
+      Object.keys(d.profileTab||{}).filter((k)=>typeof d.profileTab[k]==="boolean").map((k)=>flag(k,d.profileTab[k])).join(""))+"</div>";
+  h+='<div class="grid2">'+box("activity",row("likesGiven",s.likesGiven==null?null:Number(s.likesGiven).toLocaleString()))+
+    box("settings (raw codes)",row("comments",st2.comments)+row("duet",st2.duet)+row("stitch",st2.stitch)+row("download",st2.download)+row("followingVisibility",st2.followingVisibility)+row("embed",st2.embed))+"</div>";
+  h+=box("dates",'<div class="dates">'+dateBox("created",d.dates.created)+dateBox("nicknameModified",d.dates.nicknameModified)+dateBox("usernameModified",d.dates.usernameModified)+"</div>");
   const imgs=[["large",a.large||p.avatar],["medium",a.medium],["thumb",a.thumb]].filter((x)=>x[1]);
-  if(imgs.length) h+=box('avatars','<div class="avs">'+imgs.map((x)=>'<div class="a"><img src="'+esc(x[1])+'" alt="'+x[0]+' avatar" referrerpolicy="no-referrer"><span>'+x[0]+'</span></div>').join('')+'</div>');
-  $("out").innerHTML=h;
+  if(imgs.length)h+=box("avatars",'<div class="avs">'+imgs.map((x)=>'<div class="a"><img src="'+esc(x[1])+'" alt="'+x[0]+' avatar" referrerpolicy="no-referrer"><span>'+x[0]+"</span></div>").join("")+"</div>");
+  return h;
+}
+
+function renderCompare(A,B){
+  const ep=(d)=>d.dates.created&&d.dates.created.epochSeconds||0;
+  const metrics=[["Joined",(d)=>ep(d)?dstr(ep(d)):"not exposed",(d)=>ep(d)||null,true],
+    ["Followers",(d)=>fmt(d.stats.followers),(d)=>d.stats.followers,false],["Following",(d)=>fmt(d.stats.following),(d)=>d.stats.following,false],
+    ["Likes",(d)=>fmt(d.stats.likes),(d)=>d.stats.likes,false],["Videos",(d)=>fmt(d.stats.videos),(d)=>d.stats.videos,false],
+    ["Friends",(d)=>fmt(d.stats.friends),(d)=>d.stats.friends,false],["Region",(d)=>country(d.profile.region)||"not exposed",()=>null,false]];
+  const head=(d)=>'<div class="h">'+((d.profile.avatars&&d.profile.avatars.large)||d.profile.avatar?'<img src="'+esc((d.profile.avatars&&d.profile.avatars.large)||d.profile.avatar)+'" alt="" referrerpolicy="no-referrer">':"")+"<div>"+esc(d.profile.nickname||d.profile.username)+'</div><div class="sm">@'+esc(d.profile.username)+"</div></div>";
+  let g='<div class="cmp"><div class="h"></div>'+head(A)+head(B);
+  metrics.forEach((m)=>{
+    const a=m[2](A),b=m[2](B);let wa="",wb="";
+    if(a!=null&&b!=null&&a!==b){const aw=m[3]?a<b:a>b;wa=aw?" w":"";wb=aw?"":" w";}
+    g+='<div class="l">'+m[0]+'</div><div class="c'+wa+'">'+esc(m[1](A))+'</div><div class="c'+wb+'">'+esc(m[1](B))+"</div>";
+  });
+  g+="</div>";
+  let sum="";const ea=ep(A),eb=ep(B);
+  if(ea&&eb){const gap=Math.round(Math.abs(ea-eb)/86400),first=ea<eb?A:B,second=ea<eb?B:A;
+    sum+="@"+esc(first.profile.username)+" joined "+gap.toLocaleString()+" days before @"+esc(second.profile.username)+".";}
+  const fa=A.stats.followers,fb=B.stats.followers;
+  if(fa&&fb&&fa!==fb){const hi=fa>fb?A:B,lo=fa>fb?B:A;sum+=" @"+esc(hi.profile.username)+" has "+(Math.max(fa,fb)/Math.min(fa,fb)).toFixed(1)+"x more followers than @"+esc(lo.profile.username)+".";}
+  return box("compare",g+(sum?'<div class="nt">'+sum+"</div>":""));
 }
 
 const DEMO={profile:{id:"7000000000000000000",secUid:"MS4wLjABAAAA_demo",username:"demo_user",nickname:"Demo User",bio:"sample data, not a real account",language:"en",region:"US",bioLink:null,verified:false,privateAccount:false,organization:false,commerceUser:false,seller:false,openFavorite:false,live:false,avatar:"",avatars:{}},
 dates:{created:{epochSeconds:1592775099,iso:"2020-06-21T21:31:39.000Z"},nicknameModified:{epochSeconds:1772019789,iso:"2026-02-25T11:43:09.000Z"},usernameModified:{epochSeconds:0,iso:null}},
 stats:{followers:88,following:74,likes:4994,videos:0,friends:75,likesGiven:120},settings:{comments:0,duet:0,stitch:0,download:0,followingVisibility:1,embed:1},profileTab:{}};
+const DEMO2=JSON.parse(JSON.stringify(DEMO));
+Object.assign(DEMO2.profile,{username:"demo_two",nickname:"Demo Two",region:"GB"});
+DEMO2.dates.created={epochSeconds:1538352000,iso:"2018-10-01T00:00:00.000Z"};
+Object.assign(DEMO2.stats,{followers:2400,following:310,likes:51000,videos:42,friends:160});
 
-const fail=(m)=>{$("out").innerHTML=box('error',"throw std::runtime_error(\""+esc(m)+"\");",'err');};
+class NetErr extends Error{}
+async function getProfile(n){
+  let r;
+  try{r=await fetch("/api/profile?username="+encodeURIComponent(n));}catch{throw new NetErr("no server");}
+  let j;try{j=await r.json();}catch{throw new NetErr("no api");}
+  if(r.status===402){const e=new Error(j.error);e.premium=n;throw e;}
+  if(!r.ok)throw new Error(j.error||"request failed");
+  return j;
+}
+
+const valid=(n)=>/^[A-Za-z0-9._]{1,24}$/.test(n);
+const clean=(n)=>(n||"").trim().replace(/^@/,"");
+const fail=(m)=>{$("out").innerHTML=box("error","throw std::runtime_error(&quot;"+esc(m)+"&quot;);","err");};
+let lastText="",lastLink="";
+
+function copy(text,btn){
+  const done=()=>{if(btn){const o=btn.textContent;btn.textContent="copied!";setTimeout(()=>btn.textContent=o,1500);}};
+  if(navigator.clipboard)navigator.clipboard.writeText(text).then(done,()=>prompt("Copy this:",text));else prompt("Copy this:",text);
+}
+
+function summary(d){
+  const p=d.profile,s=d.stats,c=d.dates.created&&d.dates.created.epochSeconds;
+  return "@"+p.username+" ("+(p.nickname||"")+")\n"+(c?"Joined: "+new Date(c*1000).toLocaleString()+"\n":"")+
+    "Region: "+(country(p.region)||"not exposed")+"\nFollowers: "+s.followers+" | Following: "+s.following+" | Likes: "+s.likes+" | Videos: "+s.videos;
+}
+
+const LOCKED=["_ik1xx"];
+function premiumBox(name){
+  return box("access denied",'<div style="text-align:center;padding:18px 8px"><div style="font-size:42px">🔒</div>'+
+    '<div class="big" style="margin:8px 0">Sorry, @'+esc(name)+' is premium only.</div>'+
+    '<div class="sm" style="margin-bottom:16px">Pay <b style="color:#fff">£1,000,000</b> to see this user.</div>'+
+    '<button id="payBtn" type="button">pay £1,000,000</button><div id="payMsg" class="sm" style="margin-top:12px"></div></div>',"err");
+}
+async function run(u,v){
+  const lk=[u,v].find((n)=>n&&LOCKED.includes(n.toLowerCase()));
+  if(lk){
+    $("out").innerHTML=premiumBox(lk);
+    $("payBtn").onclick=()=>{$("payMsg").textContent="payment declined: insufficient funds 💀";};
+    return;
+  }
+  $("go").disabled=true;
+  $("out").innerHTML=box("",'// fetching... <span class="cur"></span>',"empty");
+  let demo=false,A,B;
+  try{
+    if(v)[A,B]=await Promise.all([getProfile(u),getProfile(v)]);else A=await getProfile(u);
+  }catch(e){
+    if(e.premium){$("go").disabled=false;$("out").innerHTML=premiumBox(e.premium);$("payBtn").onclick=()=>{$("payMsg").textContent="payment declined: insufficient funds 💀";};return;}
+    if(e instanceof NetErr){demo=true;A=DEMO;B=DEMO2;}else{$("go").disabled=false;return fail(e.message);}
+  }
+  let h=demo?box("","DEMO MODE: no backend connected, showing sample data. Run server.js for real lookups.","note"):"";
+  h+=v?renderCompare(A,B):renderOne(A);
+  const base=location.origin!=="null"?location.origin+location.pathname:location.pathname;
+  lastLink=base+"?u="+encodeURIComponent(u)+(v?"&v="+encodeURIComponent(v):"");
+  lastText=v?summary(A)+"\n\n"+summary(B):summary(A);
+  h+='<div class="box"><div class="btns"><button id="shareBtn" type="button">copy share link</button><button id="sumBtn" type="button" class="ghost">copy summary</button></div></div>';
+  $("out").innerHTML=h;
+  $("shareBtn").onclick=(e)=>copy(lastLink,e.target);
+  $("sumBtn").onclick=(e)=>copy(lastText,e.target);
+  try{history.replaceState(null,"","?u="+encodeURIComponent(u)+(v?"&v="+encodeURIComponent(v):""));}catch{}
+  tick();$("go").disabled=false;
+}
+
+function setCompare(on){$("f2").classList.toggle("on",on);$("cmpBtn").textContent=on?"- single":"+ compare";if(!on)$("v").value="";}
+$("cmpBtn").onclick=()=>setCompare(!$("f2").classList.contains("on"));
 
 document.addEventListener("click",(e)=>{
   const c=e.target.closest("[data-c]");
-  if(c&&navigator.clipboard){navigator.clipboard.writeText(c.dataset.c).catch(()=>{});}
+  if(c)copy(c.dataset.c);
 });
 
-$("f").addEventListener("submit",async(e)=>{
+$("f").addEventListener("submit",(e)=>{
   e.preventDefault();
-  const n=$("u").value.trim().replace(/^@/,"");
-  if(!/^[A-Za-z0-9._]{1,24}$/.test(n)) return fail("invalid username: letters, numbers, . and _ only");
-  $("go").disabled=true;
-  $("out").innerHTML=box('','// fetching @'+esc(n)+'... <span class="cur"></span>','empty');
-  try{
-    const r=await fetch("/api/profile?username="+encodeURIComponent(n));
-    const j=await r.json();
-    r.ok?render(j):fail(j.error||"request failed");
-  }catch{render(DEMO,true);}
-  finally{$("go").disabled=false;}
+  const u=clean($("u").value),v=$("f2").classList.contains("on")?clean($("v").value):"";
+  if(!valid(u)||(v&&!valid(v)))return fail("invalid username: letters, numbers, . and _ only");
+  run(u,v);
 });
+
+(function(){
+  const q=new URLSearchParams(location.search),u=clean(q.get("u")),v=clean(q.get("v"));
+  if(u&&valid(u)){$("u").value=u;if(v&&valid(v)){setCompare(true);$("v").value=v;}run(u,v&&valid(v)?v:"");}
+})();
 </script>
 </body>
 </html>
